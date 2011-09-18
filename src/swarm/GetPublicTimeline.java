@@ -79,17 +79,18 @@ public class GetPublicTimeline
 		            Connection con = getConnection(); 		
 		            Statement sql_statement = con.createStatement();
 		            
-		            for(int i = 0; i < 1; i++)
+		            for(int i = 0; i < 1611; i++)
 					{
 						 List<Status> statuses =weibo.getPublicTimeline();
 						for (Status status : statuses) 
 						{
-							String sqlStr = "insert into text values('"+status.getId()+"','"+status.getUser().getId()+"','"+status.getUser().getName()+"','"+dateToMySQLDateTimeString(status.getCreatedAt())+"','"+status.getText()+"','"+status.getSource()+"','"
+							String statusTest = status.getText().replace("'","''"); 
+							String sqlStr = "insert ignore into`text` values("+status.getId()+",'"+status.getUser().getId()+"','"+status.getUser().getName()+"','"+dateToMySQLDateTimeString(status.getCreatedAt())+"','"+statusTest+"','"+status.getSource()+"','"
 						+(status.isTruncated()?1:0)+"','"+status.getInReplyToStatusId()+"','"+status.getInReplyToUserId()+"','"
 									+(status.isFavorited()?1:0)+"','"+status.getInReplyToScreenName()+"','"+status.getLatitude()+"','"
 									+status.getLongitude()+"','"+status.getThumbnail_pic()+"','"+status.getBmiddle_pic()+"','"+status.getOriginal_pic()+"','"
 									+status.getMid()+"');";
-							System.out.println("bool is: "+status.isFavorited()+"query is : "+sqlStr); 
+							System.out.println("query is : "+sqlStr); 
 	
 				            sql_statement.execute(sqlStr); 	  
 						}
