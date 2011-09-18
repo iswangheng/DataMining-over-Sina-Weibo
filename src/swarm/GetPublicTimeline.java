@@ -63,56 +63,61 @@ public class GetPublicTimeline
 		    return ret.toString();
 	   }
 	   
-	public static void main(String[] args) 
-	{
-		System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
-    	System.setProperty("weibo4j.oauth.consumerSecret", Weibo.CONSUMER_SECRET);
-    	try 
-    	{
-			//获取前20条最新更新的公共微博消息
-    		Weibo weibo = new Weibo();
-    		String accessToken = "8f5c79949a6bf0e99993f38292cf5be3";
-    		String accessTokenSecret = "5564ed6f9e9a9dc8cbb859d9db60850b";
-			weibo.setToken(accessToken,accessTokenSecret);
-			try
-	        {
-	            Connection con = getConnection(); 		
-	            Statement sql_statement = con.createStatement();
-	            
-	            for(int i = 0; i < 1; i++)
-				{
-					 List<Status> statuses =weibo.getPublicTimeline();
-					for (Status status : statuses) 
+	   public static void  getPublicTimeline()
+	   {
+			System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
+	    	System.setProperty("weibo4j.oauth.consumerSecret", Weibo.CONSUMER_SECRET);
+	    	try 
+	    	{
+				//获取前20条最新更新的公共微博消息
+	    		Weibo weibo = new Weibo();
+	    		String accessToken = "8f5c79949a6bf0e99993f38292cf5be3";
+	    		String accessTokenSecret = "5564ed6f9e9a9dc8cbb859d9db60850b";
+				weibo.setToken(accessToken,accessTokenSecret);
+				try
+		        {
+		            Connection con = getConnection(); 		
+		            Statement sql_statement = con.createStatement();
+		            
+		            for(int i = 0; i < 1; i++)
 					{
-						String sqlStr = "insert into text values('"+status.getId()+"','"+status.getUser().getId()+"','"+status.getUser().getName()+"','"+dateToMySQLDateTimeString(status.getCreatedAt())+"','"+status.getText()+"','"+status.getSource()+"','"
-					+(status.isTruncated()?1:0)+"','"+status.getInReplyToStatusId()+"','"+status.getInReplyToUserId()+"','"
-								+(status.isFavorited()?1:0)+"','"+status.getInReplyToScreenName()+"','"+status.getLatitude()+"','"
-								+status.getLongitude()+"','"+status.getThumbnail_pic()+"','"+status.getBmiddle_pic()+"','"+status.getOriginal_pic()+"','"
-								+status.getMid()+"');";
-						System.out.println("bool is: "+status.isFavorited()+"query is : "+sqlStr); 
-
-			            sql_statement.execute(sqlStr); 	  
-					}
-				}	         
-	            
-	            System.out.println("Finished!!~~");
-
-	             sql_statement.close();
-	             con.close();
-	            
-	        } 
-			catch(java.lang.ClassNotFoundException e) 
-			{
-	            System.err.print("ClassNotFoundException"); 
-	            System.err.println(e.getMessage());
-	        } 
-			catch (SQLException ex) 
-			{
-	            System.err.println("SQLException: " + ex.getMessage());
-	        }
-
-		} catch (WeiboException e) {
-			e.printStackTrace();
+						 List<Status> statuses =weibo.getPublicTimeline();
+						for (Status status : statuses) 
+						{
+							String sqlStr = "insert into text values('"+status.getId()+"','"+status.getUser().getId()+"','"+status.getUser().getName()+"','"+dateToMySQLDateTimeString(status.getCreatedAt())+"','"+status.getText()+"','"+status.getSource()+"','"
+						+(status.isTruncated()?1:0)+"','"+status.getInReplyToStatusId()+"','"+status.getInReplyToUserId()+"','"
+									+(status.isFavorited()?1:0)+"','"+status.getInReplyToScreenName()+"','"+status.getLatitude()+"','"
+									+status.getLongitude()+"','"+status.getThumbnail_pic()+"','"+status.getBmiddle_pic()+"','"+status.getOriginal_pic()+"','"
+									+status.getMid()+"');";
+							System.out.println("bool is: "+status.isFavorited()+"query is : "+sqlStr); 
+	
+				            sql_statement.execute(sqlStr); 	  
+						}
+					}	         
+		            
+		            System.out.println("Finished!!~~");
+	
+		             sql_statement.close();
+		             con.close();
+		            
+		        } 
+				catch(java.lang.ClassNotFoundException e) 
+				{
+		            System.err.print("ClassNotFoundException"); 
+		            System.err.println(e.getMessage());
+		        } 
+				catch (SQLException ex) 
+				{
+		            System.err.println("SQLException: " + ex.getMessage());
+		        }
+	
+			} catch (WeiboException e) {
+				e.printStackTrace();
+			}
+	   }
+	   
+		public static void main(String[] args) 
+		{
+			getPublicTimeline();
 		}
-	}
 }
