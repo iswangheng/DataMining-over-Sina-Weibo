@@ -6,6 +6,7 @@ package swarm;
 
 import java.util.List;
 import java.util.Date;
+import java.util.Calendar; 
 
 import weibo4j.Status;
 import weibo4j.Weibo;
@@ -96,33 +97,50 @@ public class GetPublicTimeline {
 		return false;
 	}
 
-	public static void getPublicTimeline() {
+	public static void getPublicTimeline()
+	{
 		System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
 		System.setProperty("weibo4j.oauth.consumerSecret",
 				Weibo.CONSUMER_SECRET);
-		do {
-			try {
-				Weibo weibo = new Weibo();
-				String accessToken = "8f5c79949a6bf0e99993f38292cf5be3";
-				String accessTokenSecret = "5564ed6f9e9a9dc8cbb859d9db60850b";
-				weibo.setToken(accessToken, accessTokenSecret);
-				try {
-					Connection con = getConnection();
+	
+		try 
+		{
+			Weibo weibo = new Weibo();
+			String accessToken = "8f5c79949a6bf0e99993f38292cf5be3";
+			String accessTokenSecret = "5564ed6f9e9a9dc8cbb859d9db60850b";
+			weibo.setToken(accessToken, accessTokenSecret);
+
+			int StopPoint = 3;
+			int NowPoint = 0;
+			
+			try 
+			{
+				Connection con = getConnection();	
+				do 
+				{
 					List<Status> statuses = weibo.getPublicTimeline();
-					for (Status status : statuses) {
+					for (Status status : statuses) 
+					{
 						InsertSql(status);
 					}
-					con.close();
-				} catch (java.lang.ClassNotFoundException e) {
-					System.err.print("ClassNotFoundException");
-					System.err.println(e.getMessage());
-				}
-			} catch (SQLException ex) {
+				} 
+				while (NowPoint < StopPoint);                              // just kidding
+				con.close();
+			} 
+			catch (java.lang.ClassNotFoundException e) 
+			{
+				System.err.print("ClassNotFoundException");
+				System.err.println(e.getMessage());
+			}		
+			catch (SQLException ex) 
+			{
 				System.err.println("SQLException: " + ex.getMessage());
-			} catch (WeiboException e) {
-				e.printStackTrace();
-			}
-		} while (true);
+			} 
+		} 
+		catch (WeiboException e) 
+		{
+			e.printStackTrace();
+		}
 
 	}
 
