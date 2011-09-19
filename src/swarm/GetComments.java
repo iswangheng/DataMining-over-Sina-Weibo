@@ -18,28 +18,16 @@ import weibo4j.WeiboException;
 
 /**
  * 
-
-CREATE TABLE `comments` (
-  `id` bigint(20) NOT NULL,
-  `userName` longtext,
-  `userId` bigint(20) DEFAULT NULL,
-  `createdAt` longtext,
-  `statusId` bigint(20) DEFAULT NULL,
-  `text` longtext,
-  `source` longtext,
-  `isTruncated` tinyint(1) DEFAULT NULL,
-  `inReplyToStatusId` mediumtext,
-  `inReplyToUserId` mediumtext,
-  `isFavorited` tinyint(1) DEFAULT NULL,
-  `inReplyToScreenName` longtext,
-  `latitude` tinyint(1) DEFAULT NULL,
-  `longitude` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
+ CREATE TABLE `comments` ( `id` bigint(20) NOT NULL, `userName` longtext,
+ * `userId` bigint(20) DEFAULT NULL, `createdAt` longtext, `statusId` bigint(20)
+ * DEFAULT NULL, `text` longtext, `source` longtext, `isTruncated` tinyint(1)
+ * DEFAULT NULL, `inReplyToStatusId` mediumtext, `inReplyToUserId` mediumtext,
+ * `isFavorited` tinyint(1) DEFAULT NULL, `inReplyToScreenName` longtext,
+ * `latitude` tinyint(1) DEFAULT NULL, `longitude` tinyint(1) DEFAULT NULL,
+ * PRIMARY KEY (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ * 
  * 
  */
-
 
 public class GetComments {
 
@@ -133,27 +121,31 @@ public class GetComments {
 		System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
 		System.setProperty("weibo4j.oauth.consumerSecret",
 				Weibo.CONSUMER_SECRET);
-		Connection con1 = getConnection();
-		java.sql.Statement stmt = con1.createStatement(
-				ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		ResultSet rset = stmt.executeQuery("select * from status");
 		do {
-			try {
-				Weibo weibo = new Weibo();
-				weibo.setToken(Access.accessToken, Access.accessTokenSecret);
-				rset.next();
-				Long statusId = rset.getLong(1);
-				List<Comment> comments = weibo.getComments(statusId.toString());
-				for (Comment comment : comments) {
-					InsertSql(comment, statusId);
+			Connection con1 = getConnection();
+			java.sql.Statement stmt = con1.createStatement(
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			ResultSet rset = stmt.executeQuery("select * from status");
+			do {
+				try {
+					Weibo weibo = new Weibo();
+					weibo.setToken(Access.accessToken, Access.accessTokenSecret);
+					rset.next();
+					Long statusId = rset.getLong(1);
+					List<Comment> comments = weibo.getComments(statusId
+							.toString());
+					for (Comment comment : comments) {
+						InsertSql(comment, statusId);
+					}
+				} catch (SQLException ex) {
+					System.err.println("SQLException: " + ex.getMessage());
+				} catch (WeiboException e) {
+					e.printStackTrace();
 				}
-			} catch (SQLException ex) {
-				System.err.println("SQLException: " + ex.getMessage());
-			} catch (WeiboException e) {
-				e.printStackTrace();
-			}
-		} while (!rset.isLast());
-		con1.close();
+			} while (!rset.isLast());
+			con1.close();
+		} while (true);
 	}
 
 	public static void main(String[] args) throws WeiboException,
