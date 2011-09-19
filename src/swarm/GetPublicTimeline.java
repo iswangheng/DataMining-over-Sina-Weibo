@@ -63,12 +63,8 @@ public class GetPublicTimeline {
 			
 			 */
 			String insql = "insert ignore into status(id,userName,userId,createdAt,text,source,isTruncated,inReplyToStatusId,inReplyToUserId,isFavorited,inReplyToScreenName,latitude,longitude,thumbnail_pic,bmiddle_pic,original_pic,mid) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
-			// insql="insert into user(userid,username,password,email) values(user.getId,user.getName,user.getPassword,user.getEmail)";
-			PreparedStatement ps = getConnection().prepareStatement(insql);
-			// .preparedStatement(insql);
-			// PreparedStatement ps=(PreparedStatement)
-			// conn.prepareStatement(insql);
+ 	    	Connection con = getConnection();	
+			PreparedStatement ps = con.prepareStatement(insql); 
 			ps.setLong(1, status.getId());
 			ps.setString(2, status.getUser().getName());
 			ps.setLong(3, status.getUser().getId());
@@ -88,12 +84,14 @@ public class GetPublicTimeline {
 			ps.setString(17, status.getMid());
 
 			int result = ps.executeUpdate();
-			// ps.executeUpdate();
+			con.close(); 
 			if (result > 0)
 				return true;
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}	 	
 		return false;
 	}
 
@@ -108,34 +106,16 @@ public class GetPublicTimeline {
 			Weibo weibo = new Weibo();
 			String accessToken = "8f5c79949a6bf0e99993f38292cf5be3";
 			String accessTokenSecret = "5564ed6f9e9a9dc8cbb859d9db60850b";
-			weibo.setToken(accessToken, accessTokenSecret);
-
-			int StopPoint = 3;
-			int NowPoint = 0;
-			
-			try 
+			weibo.setToken(accessToken, accessTokenSecret); 
+			do 
 			{
-				Connection con = getConnection();	
-				do 
+				List<Status> statuses = weibo.getPublicTimeline();
+				for (Status status : statuses) 
 				{
-					List<Status> statuses = weibo.getPublicTimeline();
-					for (Status status : statuses) 
-					{
-						InsertSql(status);
-					}
-				} 
-				while (NowPoint < StopPoint);                              // just kidding
-				con.close();
+					InsertSql(status);
+				}
 			} 
-			catch (java.lang.ClassNotFoundException e) 
-			{
-				System.err.print("ClassNotFoundException");
-				System.err.println(e.getMessage());
-			}		
-			catch (SQLException ex) 
-			{
-				System.err.println("SQLException: " + ex.getMessage());
-			} 
+			while (true);                              // just kidding 
 		} 
 		catch (WeiboException e) 
 		{
