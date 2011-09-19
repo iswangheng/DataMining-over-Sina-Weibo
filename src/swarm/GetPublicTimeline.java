@@ -108,8 +108,6 @@ public class GetPublicTimeline {
 				weibo.setToken(accessToken, accessTokenSecret);
 				try {
 					Connection con = getConnection();
-					Statement sql_statement = con.createStatement();
-
 					List<Status> statuses = weibo.getPublicTimeline();
 					for (Status status : statuses) {
 						InsertSql(status);
@@ -136,7 +134,6 @@ public class GetPublicTimeline {
 
 						// sql_statement.execute(sqlStr);
 					}
-					sql_statement.close();
 					con.close();
 				} catch (java.lang.ClassNotFoundException e) {
 					System.err.print("ClassNotFoundException");
