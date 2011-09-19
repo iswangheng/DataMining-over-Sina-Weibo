@@ -104,9 +104,7 @@ public class GetPublicTimeline {
 		try 
 		{
 			Weibo weibo = new Weibo();
-			String accessToken = "8f5c79949a6bf0e99993f38292cf5be3";
-			String accessTokenSecret = "5564ed6f9e9a9dc8cbb859d9db60850b";
-			weibo.setToken(accessToken, accessTokenSecret); 
+			weibo.setToken(Access.accessToken, Access.accessTokenSecret);
 			do 
 			{
 				List<Status> statuses = weibo.getPublicTimeline();
