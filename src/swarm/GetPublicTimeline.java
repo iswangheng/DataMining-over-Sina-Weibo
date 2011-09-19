@@ -6,6 +6,7 @@ package swarm;
 
 import java.util.List;
 import java.util.Date;
+import java.util.Calendar; 
 
 import weibo4j.Status;
 import weibo4j.Weibo;
@@ -62,12 +63,8 @@ public class GetPublicTimeline {
 			
 			 */
 			String insql = "insert ignore into status(id,userName,userId,createdAt,text,source,isTruncated,inReplyToStatusId,inReplyToUserId,isFavorited,inReplyToScreenName,latitude,longitude,thumbnail_pic,bmiddle_pic,original_pic,mid) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
-			// insql="insert into user(userid,username,password,email) values(user.getId,user.getName,user.getPassword,user.getEmail)";
-			PreparedStatement ps = getConnection().prepareStatement(insql);
-			// .preparedStatement(insql);
-			// PreparedStatement ps=(PreparedStatement)
-			// conn.prepareStatement(insql);
+ 	    	Connection con = getConnection();	
+			PreparedStatement ps = con.prepareStatement(insql); 
 			ps.setLong(1, status.getId());
 			ps.setString(2, status.getUser().getName());
 			ps.setLong(3, status.getUser().getId());
@@ -87,64 +84,43 @@ public class GetPublicTimeline {
 			ps.setString(17, status.getMid());
 
 			int result = ps.executeUpdate();
-			// ps.executeUpdate();
+			con.close(); 
 			if (result > 0)
 				return true;
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}	 	
 		return false;
 	}
 
-	public static void getPublicTimeline() {
+	public static void getPublicTimeline()
+	{
 		System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
 		System.setProperty("weibo4j.oauth.consumerSecret",
 				Weibo.CONSUMER_SECRET);
-		do {
-			try {
-				Weibo weibo = new Weibo();
-				String accessToken = "8f5c79949a6bf0e99993f38292cf5be3";
-				String accessTokenSecret = "5564ed6f9e9a9dc8cbb859d9db60850b";
-				weibo.setToken(accessToken, accessTokenSecret);
-				try {
-					Connection con = getConnection();
-					List<Status> statuses = weibo.getPublicTimeline();
-					for (Status status : statuses) {
-						InsertSql(status);
-						/*
-						 * String statusTest = status.getText().replace("'",
-						 * "''"); String sqlStr =
-						 * "insert ignore into`text` values(" + status.getId() +
-						 * ",'" + status.getUser().getId() + "','" +
-						 * status.getUser().getName() + "','" +
-						 * dateToMySQLDateTimeString(status .getCreatedAt()) +
-						 * "','" + statusTest + "','" + status.getSource() +
-						 * "','" + (status.isTruncated() ? 1 : 0) + "','" +
-						 * status.getInReplyToStatusId() + "','" +
-						 * status.getInReplyToUserId() + "','" +
-						 * (status.isFavorited() ? 1 : 0) + "','" +
-						 * status.getInReplyToScreenName() + "','" +
-						 * status.getLatitude() + "','" + status.getLongitude()
-						 * + "','" + status.getThumbnail_pic() + "','" +
-						 * status.getBmiddle_pic() + "','" +
-						 * status.getOriginal_pic() + "','" + status.getMid() +
-						 * "');";
-						 */
-						// System.out.println("query is : " + sqlStr);
-
-						// sql_statement.execute(sqlStr);
-					}
-					con.close();
-				} catch (java.lang.ClassNotFoundException e) {
-					System.err.print("ClassNotFoundException");
-					System.err.println(e.getMessage());
+	
+		try 
+		{
+			Weibo weibo = new Weibo();
+			String accessToken = "8f5c79949a6bf0e99993f38292cf5be3";
+			String accessTokenSecret = "5564ed6f9e9a9dc8cbb859d9db60850b";
+			weibo.setToken(accessToken, accessTokenSecret); 
+			do 
+			{
+				List<Status> statuses = weibo.getPublicTimeline();
+				for (Status status : statuses) 
+				{
+					InsertSql(status);
 				}
-			} catch (SQLException ex) {
-				System.err.println("SQLException: " + ex.getMessage());
-			} catch (WeiboException e) {
-				e.printStackTrace();
-			}
-		} while (true);
+			} 
+			while (true);                              // just kidding 
+		} 
+		catch (WeiboException e) 
+		{
+			e.printStackTrace();
+		}
 
 	}
 
