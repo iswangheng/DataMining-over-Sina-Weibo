@@ -17,8 +17,7 @@ import weibo4j.Weibo;
 import weibo4j.WeiboException;
 
 /**
- * @author sina
- * delimiter $$
+ * 
 
 CREATE TABLE `comments` (
   `id` bigint(20) NOT NULL,
@@ -36,9 +35,8 @@ CREATE TABLE `comments` (
   `latitude` tinyint(1) DEFAULT NULL,
   `longitude` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-EDIT `weibo`.`comments`;
  * 
  */
 
