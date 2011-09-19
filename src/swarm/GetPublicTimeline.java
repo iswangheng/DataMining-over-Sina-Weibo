@@ -111,28 +111,6 @@ public class GetPublicTimeline {
 					List<Status> statuses = weibo.getPublicTimeline();
 					for (Status status : statuses) {
 						InsertSql(status);
-						/*
-						 * String statusTest = status.getText().replace("'",
-						 * "''"); String sqlStr =
-						 * "insert ignore into`text` values(" + status.getId() +
-						 * ",'" + status.getUser().getId() + "','" +
-						 * status.getUser().getName() + "','" +
-						 * dateToMySQLDateTimeString(status .getCreatedAt()) +
-						 * "','" + statusTest + "','" + status.getSource() +
-						 * "','" + (status.isTruncated() ? 1 : 0) + "','" +
-						 * status.getInReplyToStatusId() + "','" +
-						 * status.getInReplyToUserId() + "','" +
-						 * (status.isFavorited() ? 1 : 0) + "','" +
-						 * status.getInReplyToScreenName() + "','" +
-						 * status.getLatitude() + "','" + status.getLongitude()
-						 * + "','" + status.getThumbnail_pic() + "','" +
-						 * status.getBmiddle_pic() + "','" +
-						 * status.getOriginal_pic() + "','" + status.getMid() +
-						 * "');";
-						 */
-						// System.out.println("query is : " + sqlStr);
-
-						// sql_statement.execute(sqlStr);
 					}
 					con.close();
 				} catch (java.lang.ClassNotFoundException e) {
