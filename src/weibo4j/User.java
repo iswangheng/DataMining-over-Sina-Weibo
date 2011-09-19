@@ -289,6 +289,25 @@ public class User extends WeiboResponse implements java.io.Serializable {
 		}
 
 	}
+	
+	
+	/**
+	 * 王恒写的用来 得到TMD next_cursor的东东!!!草泥马
+	 * @author swarm
+	 */
+	public static int getNextCursor(Response res)throws WeiboException
+	{
+		JSONObject json=res.asJSONObject();
+		try 
+		{
+			int next_cursor = json.getInt("next_cursor");  
+			return next_cursor; 
+		}
+		catch (JSONException je) {
+			throw new WeiboException(je);
+		}
+
+	}
 
 	public static List<User> constructUsers(Response res, Weibo weibo) throws WeiboException {
 		Document doc = res.asDocument();
