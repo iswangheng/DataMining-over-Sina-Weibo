@@ -95,9 +95,9 @@ public class GetTrends {
 				String accessToken = "8f5c79949a6bf0e99993f38292cf5be3";
 				String accessTokenSecret = "5564ed6f9e9a9dc8cbb859d9db60850b";
 				weibo.setToken(accessToken, accessTokenSecret);
-				List<Trends> trends = weibo.getTrendsHourly(0);
-				// System.out.println("=======按天返回热门话题=======");
-				// System.out.println(trends.get(0));
+				List<Trends> trends = weibo.getTrendsHourly(0); // 每小时的
+				//List<Trends> trends = weibo.getTrendsDaily(0);  // 每天的
+				//List<Trends> trends = weibo.getTrendsWeekly(0); // 每周的
 				InsertSql(trends.get(0));
 			} catch (WeiboException e) {
 				e.printStackTrace();
