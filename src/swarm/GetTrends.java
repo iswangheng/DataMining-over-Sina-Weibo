@@ -70,7 +70,7 @@ public class GetTrends {
 			PreparedStatement ps = con.prepareStatement(insql);
 
 			for (Trend trend : trends.getTrends()) {
-				System.out.println(dateToMySQLDateTimeString(trends.getTrendAt()));
+				System.out.println(dateToMySQLDateTimeString(trends.getAsOf()));
 				System.out.println(trend.getName());
 				ps.setString(1, dateToMySQLDateTimeString(trends.getTrendAt()));
 				ps.setString(2, trend.getName());
