@@ -1,12 +1,13 @@
 package swarm;
+
 /** SQL:
-  CREATE TABLE `trend` (
-  `idTrend` int(11) NOT NULL AUTO_INCREMENT,
-  `Time` varchar(45) DEFAULT NULL,
-  `Content` longtext,
-  PRIMARY KEY (`idTrend`)
-) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8
- * */ 
+ CREATE TABLE `trend` (
+ `idTrend` int(11) NOT NULL AUTO_INCREMENT,
+ `Time` varchar(45) DEFAULT NULL,
+ `Content` longtext,
+ PRIMARY KEY (`idTrend`)
+ ) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8
+ * */
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -23,56 +24,19 @@ import weibo4j.Weibo;
 import weibo4j.WeiboException;
 
 public class GetTrends {
-	public static Connection getConnection() throws SQLException,
-			java.lang.ClassNotFoundException {
-		Class.forName("com.mysql.jdbc.Driver");
-
-		String url = "jdbc:mysql://localhost:3306/weibo";
-		String username = "root";
-		String password = "root";
-
-		Connection con = DriverManager.getConnection(url, username, password);
-		return con;
-	}
-
-	public static String dateToMySQLDateTimeString(Date date) {
-		final String[] MONTH = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-				"Jul", "Aug", "Sep", "Oct", "Nov", "Dec", };
-
-		StringBuffer ret = new StringBuffer();
-		String dateToString = date.toString(); // like
-												// "Sat Dec 17 15:55:16 CST 2005"
-		ret.append(dateToString.substring(24, 24 + 4));// append yyyy
-		String sMonth = dateToString.substring(4, 4 + 3);
-		for (int i = 0; i < 12; i++) { // append mm
-			if (sMonth.equalsIgnoreCase(MONTH[i])) {
-				if ((i + 1) < 10)
-					ret.append("-0");
-				else
-					ret.append("-");
-				ret.append((i + 1));
-				break;
-			}
-		}
-
-		ret.append("-");
-		ret.append(dateToString.substring(8, 8 + 2));
-		ret.append(" ");
-		ret.append(dateToString.substring(11, 11 + 8));
-
-		return ret.toString();
-	}
 
 	public static void InsertSql(Trends trends) {
 		try {
 			String insql = "insert ignore into Trend(Time,Content) values(?,?)";
-			Connection con = getConnection();
+			Connection con = PublicMethods.getConnection();
 			PreparedStatement ps = con.prepareStatement(insql);
 
 			for (Trend trend : trends.getTrends()) {
-				System.out.println(dateToMySQLDateTimeString(trends.getTrendAt()));
+				System.out.println(PublicMethods
+						.dateToMySQLDateTimeString(trends.getAsOf()));
 				System.out.println(trend.getName());
-				ps.setString(1, dateToMySQLDateTimeString(trends.getTrendAt()));
+				ps.setString(1, PublicMethods.dateToMySQLDateTimeString(trends
+						.getAsOf()));
 				ps.setString(2, trend.getName());
 				ps.executeUpdate();
 			}
@@ -94,8 +58,8 @@ public class GetTrends {
 				Weibo weibo = new Weibo();
 				weibo.setToken(Access.accessToken, Access.accessTokenSecret);
 				List<Trends> trends = weibo.getTrendsHourly(0); // 每小时的
-				//List<Trends> trends = weibo.getTrendsDaily(0);  // 每天的
-				//List<Trends> trends = weibo.getTrendsWeekly(0); // 每周的
+				// List<Trends> trends = weibo.getTrendsDaily(0); // 每天的
+				// List<Trends> trends = weibo.getTrendsWeekly(0); // 每周的
 				InsertSql(trends.get(0));
 				Thread.currentThread();
 				Thread.sleep(1000);

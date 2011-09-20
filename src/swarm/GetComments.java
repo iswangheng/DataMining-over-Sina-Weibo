@@ -37,54 +37,13 @@ public class GetComments {
 	 * @param args
 	 * @throws WeiboException
 	 */
-
-	public static Connection getConnection() throws SQLException,
-			java.lang.ClassNotFoundException {
-		Class.forName("com.mysql.jdbc.Driver");
-
-		String url = "jdbc:mysql://localhost:3306/weibo";
-		String username = "root";
-		String password = "root";
-
-		Connection con = DriverManager.getConnection(url, username, password);
-		return con;
-	}
-
-	public static String dateToMySQLDateTimeString(Date date) {
-		final String[] MONTH = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-				"Jul", "Aug", "Sep", "Oct", "Nov", "Dec", };
-
-		StringBuffer ret = new StringBuffer();
-		String dateToString = date.toString(); // like
-												// "Sat Dec 17 15:55:16 CST 2005"
-		ret.append(dateToString.substring(24, 24 + 4));// append yyyy
-		String sMonth = dateToString.substring(4, 4 + 3);
-		for (int i = 0; i < 12; i++) { // append mm
-			if (sMonth.equalsIgnoreCase(MONTH[i])) {
-				if ((i + 1) < 10)
-					ret.append("-0");
-				else
-					ret.append("-");
-				ret.append((i + 1));
-				break;
-			}
-		}
-
-		ret.append("-");
-		ret.append(dateToString.substring(8, 8 + 2));
-		ret.append(" ");
-		ret.append(dateToString.substring(11, 11 + 8));
-
-		return ret.toString();
-	}
-
 	public static boolean InsertSql(Comment comment, long statusId) {
 		try {
 			/*
 			
 			 */
 			String insql = "insert ignore into comments(id,userName,userId,createdAt,statusId,text,source,isTruncated,inReplyToStatusId,inReplyToUserId,isFavorited,inReplyToScreenName,latitude,longitude) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-			Connection con = getConnection();
+			Connection con = PublicMethods.getConnection();
 			// insql="insert into user(userid,username,password,email) values(user.getId,user.getName,user.getPassword,user.getEmail)";
 			PreparedStatement ps = con.prepareStatement(insql);
 			// .preparedStatement(insql);
@@ -93,7 +52,8 @@ public class GetComments {
 			ps.setLong(1, comment.getId());
 			ps.setString(2, comment.getUser().getName());
 			ps.setLong(3, comment.getUser().getId());
-			ps.setString(4, dateToMySQLDateTimeString(comment.getCreatedAt()));
+			ps.setString(4, PublicMethods.dateToMySQLDateTimeString(comment
+					.getCreatedAt()));
 			ps.setLong(5, statusId);
 			ps.setString(6, comment.getText());
 			ps.setString(7, comment.getSource());
@@ -122,7 +82,7 @@ public class GetComments {
 		System.setProperty("weibo4j.oauth.consumerSecret",
 				Weibo.CONSUMER_SECRET);
 		do {
-			Connection con1 = getConnection();
+			Connection con1 = PublicMethods.getConnection();
 			java.sql.Statement stmt = con1.createStatement(
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
@@ -147,6 +107,8 @@ public class GetComments {
 				}
 			} while (!rset.isLast());
 			con1.close();
+			Thread.currentThread();
+			Thread.sleep(3600000);
 		} while (true);
 	}
 

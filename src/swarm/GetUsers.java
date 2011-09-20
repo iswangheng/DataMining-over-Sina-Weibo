@@ -35,66 +35,18 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1825 DEFAULT CHARSET=utf8
  */
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.PreparedStatement; 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.Date; 
 import java.util.List;
-
-import weibo4j.Comment;
-import weibo4j.Status;
+ 
 import weibo4j.Weibo;
-import weibo4j.User;
-import weibo4j.WeiboException;
+import weibo4j.User; 
 import weibo4j.http.Response;
  
 public class GetUsers
-{ 
-	public static Connection getConnection() throws SQLException,
-	java.lang.ClassNotFoundException 
-	{
-		Class.forName("com.mysql.jdbc.Driver");
-		
-		String url = "jdbc:mysql://localhost:3306/weibo";
-		String username = "root";
-		String password = "root";
-		
-		Connection conUsers = DriverManager.getConnection(url, username, password);
-		return conUsers;
-	}
-	
-	public static String dateToMySQLDateTimeString(Date date) 
-	{
-		final String[] MONTH = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-				"Jul", "Aug", "Sep", "Oct", "Nov", "Dec", };
-
-		StringBuffer ret = new StringBuffer();
-		String dateToString = date.toString(); // like
-												// "Sat Dec 17 15:55:16 CST 2005"
-		ret.append(dateToString.substring(24, 24 + 4));// append yyyy
-		String sMonth = dateToString.substring(4, 4 + 3);
-		for (int i = 0; i < 12; i++) { // append mm
-			if (sMonth.equalsIgnoreCase(MONTH[i])) {
-				if ((i + 1) < 10)
-					ret.append("-0");
-				else
-					ret.append("-");
-				ret.append((i + 1));
-				break;
-			}
-		}
-
-		ret.append("-");
-		ret.append(dateToString.substring(8, 8 + 2));
-		ret.append(" ");
-		ret.append(dateToString.substring(11, 11 + 8));
-
-		return ret.toString();
-	}
-	
+{  	 	
 	public static boolean InsertSql(User user) {
 		try 
 		{ 
@@ -102,7 +54,7 @@ public class GetUsers
 					",location,description,url,profileImageUrl" +
 					",userDomain,gender,followersCount,friendsCount" +
 					",statusesCount,favouritesCount,createdAt,verified,geoEnabled) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
- 	    	Connection conUsers = getConnection();	
+ 	    	Connection conUsers = PublicMethods.getConnection();	
 			PreparedStatement ps = conUsers.prepareStatement(insql);   
 			ps.setLong(1, user.getId());
 			ps.setString(2, user.getName());
@@ -128,7 +80,7 @@ public class GetUsers
 			ps.setInt(12,  user.getFriendsCount());
 			ps.setInt(13,  user.getStatusesCount());
 			ps.setInt(14,  user.getFavouritesCount());
-			ps.setString(15, dateToMySQLDateTimeString(user.getCreatedAt()));   
+			ps.setString(15,  PublicMethods.dateToMySQLDateTimeString(user.getCreatedAt()));   
 			ps.setBoolean(16,  user.isVerified());
 			ps.setBoolean(17,  user.isGeoEnabled());
 
@@ -150,7 +102,7 @@ public class GetUsers
 		try 
 		{ 
 			String insql = "insert ignore into relationship(userId,followerId) values(?,?)";
- 	    	Connection conRelationship = getConnection();	
+ 	    	Connection conRelationship = PublicMethods.getConnection();	
 			PreparedStatement ps = conRelationship.prepareStatement(insql);   
 			ps.setString(1, userId);
 			ps.setString(2, followerId); 
@@ -302,14 +254,13 @@ public class GetUsers
 				int friendsNum=0;
 				for(String fri: myFriendsList)
 				{
-					System.out.println("friId: "+fri);
+					//System.out.println("friId: "+fri);
 					friendsNum++;
 				}
 				System.out.println("in total:  "+friendsNum);
 			}
 			catch (Exception e1) 
-			{
-				// TODO Auto-generated catch block
+			{ 
 				e1.printStackTrace(); 
 			} 
 		} 
@@ -324,8 +275,7 @@ public class GetUsers
 	{ 
 		List<String> myFriendsList = new ArrayList<String>();
 		myFriendsList = getMyFriends();
-		/*
-		 * test myFriendsList()
+		/* test myFriendsList()
 		int friendsNum=0;
 		for(String fri: myFriendsList)
 		{
