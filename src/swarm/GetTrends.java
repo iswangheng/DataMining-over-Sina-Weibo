@@ -72,7 +72,7 @@ public class GetTrends {
 			for (Trend trend : trends.getTrends()) {
 				System.out.println(dateToMySQLDateTimeString(trends.getAsOf()));
 				System.out.println(trend.getName());
-				ps.setString(1, dateToMySQLDateTimeString(trends.getTrendAt()));
+				ps.setString(1, dateToMySQLDateTimeString(trends.getAsOf()));
 				ps.setString(2, trend.getName());
 				ps.executeUpdate();
 			}
