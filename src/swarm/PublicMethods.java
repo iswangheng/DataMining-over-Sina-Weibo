@@ -7,7 +7,7 @@ import java.util.Date;
 
 public class PublicMethods {
 	public static Connection getConnection() throws SQLException,
-		java.lang.ClassNotFoundException {
+			java.lang.ClassNotFoundException {
 		Class.forName("com.mysql.jdbc.Driver");
 
 		String url = "jdbc:mysql://localhost:3306/weibo";
@@ -20,8 +20,8 @@ public class PublicMethods {
 
 	public static String dateToMySQLDateTimeString(Date date) {
 		final String[] MONTH = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec", };
-	
+				"Jul", "Aug", "Sep", "Oct", "Nov", "Dec", };
+
 		StringBuffer ret = new StringBuffer();
 		String dateToString = date.toString(); // like
 												// "Sat Dec 17 15:55:16 CST 2005"
@@ -42,7 +42,7 @@ public class PublicMethods {
 		ret.append(dateToString.substring(8, 8 + 2));
 		ret.append(" ");
 		ret.append(dateToString.substring(11, 11 + 8));
-		
+
 		return ret.toString();
 	}
 }

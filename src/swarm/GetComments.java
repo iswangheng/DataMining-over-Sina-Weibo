@@ -52,7 +52,8 @@ public class GetComments {
 			ps.setLong(1, comment.getId());
 			ps.setString(2, comment.getUser().getName());
 			ps.setLong(3, comment.getUser().getId());
-			ps.setString(4, PublicMethods.dateToMySQLDateTimeString(comment.getCreatedAt()));
+			ps.setString(4, PublicMethods.dateToMySQLDateTimeString(comment
+					.getCreatedAt()));
 			ps.setLong(5, statusId);
 			ps.setString(6, comment.getText());
 			ps.setString(7, comment.getSource());
