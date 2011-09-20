@@ -147,6 +147,8 @@ public class GetComments {
 				}
 			} while (!rset.isLast());
 			con1.close();
+			Thread.currentThread();
+			Thread.sleep(3600000);
 		} while (true);
 	}
 
