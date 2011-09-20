@@ -1,6 +1,26 @@
 package swarm;
 
 /**
+ * CREATE TABLE `status` (
+  `id` bigint(20) NOT NULL,
+  `userName` longtext,
+  `userId` bigint(20) DEFAULT NULL,
+  `createdAt` longtext,
+  `text` longtext,
+  `source` longtext,
+  `isTruncated` tinyint(1) DEFAULT NULL,
+  `inReplyToStatusId` bigint(20) DEFAULT NULL,
+  `inReplyToUserId` bigint(20) DEFAULT NULL,
+  `isFavorited` tinyint(1) DEFAULT NULL,
+  `inReplyToScreenName` longtext,
+  `latitude` double DEFAULT NULL,
+  `longitude` double DEFAULT NULL,
+  `thumbnail_pic` longtext,
+  `bmiddle_pic` longtext,
+  `original_pic` longtext,
+  `mid` longtext,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
  *
  */
 
