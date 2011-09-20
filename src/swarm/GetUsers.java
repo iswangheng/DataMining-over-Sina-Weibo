@@ -10,7 +10,7 @@ CREATE TABLE `users` (
   `province` int(11) DEFAULT NULL,
   `city` int(11) DEFAULT NULL,
   `location` varchar(45) DEFAULT NULL,
-  `description` varchar(45) DEFAULT NULL,
+  `description` mediumtext DEFAULT NULL,
   `url` varchar(45) DEFAULT NULL,
   `profileImageUrl` varchar(45) DEFAULT NULL,
   `userDomain` varchar(45) DEFAULT NULL,
@@ -36,6 +36,7 @@ CREATE TABLE `users` (
  */
 import java.sql.Connection;
 import java.sql.PreparedStatement; 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date; 
@@ -57,7 +58,7 @@ public class GetUsers
  	    	Connection conUsers = PublicMethods.getConnection();	
 			PreparedStatement ps = conUsers.prepareStatement(insql);   
 			ps.setLong(1, user.getId());
-			ps.setString(2, user.getName());
+			ps.setString(2, user.getScreenName());
 			ps.setInt(3, user.getProvince());
 			ps.setInt(4,  user.getCity());
 			ps.setString(5, user.getLocation());
@@ -117,9 +118,30 @@ public class GetUsers
 		}	 	
 		return false;
 	}
+	
+	
+	public static boolean hasRecordInRelationship(long userId, long followerId) throws ClassNotFoundException, SQLException
+	{
+		String query = "select count(*) from relationship where  userId = "+userId+" and followerId = "+followerId; 
+		Connection con = PublicMethods.getConnection();	
+		PreparedStatement ps = con.prepareStatement(query); 
+		ResultSet rs = ps.executeQuery();
+		rs.next();
+		int countNum = rs.getInt(1);
+		con.close();
+		//System.out.println("CountNum is : "+countNum);
+		if(countNum == 0)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
 
 	
-	public static void getMyFriendsFollowers(String userId) 
+	public static void getMyFriendsFollowers(User user) 
 	{
 		try 
 		{ 
@@ -129,37 +151,48 @@ public class GetUsers
 			weibo.setToken(Access.accessToken, Access.accessTokenSecret);  
 			Thread.currentThread();
 			int cursor = 0;
-			String followerId = ""; 
-			List<User> userList; 
-			List<User> followerList = new ArrayList<User>(); 
-			do
+			long userId = 0;
+			long followerId = 0; 
+			userId = user.getId();
+			List<User> userFollowersList; 
+			List<User> userAllFollowersList = new ArrayList<User>(); 
+			
+			InsertSql(user);					//store current user 
+			
+			do									//get current user's followers and store all those followers~
 			{
-				Response res = weibo.getFollowersStatusesResponse(userId,cursor,200); 
-				userList = User.constructUser(res); 
-				if(userList.size() == 0)
+				Response res = weibo.getFollowersStatusesResponse(userId+"",cursor,200); 
+				userFollowersList = User.constructUser(res); 
+				if(userFollowersList.size() == 0)
 				{
 					break;
 				}
-				for(User user: userList)
+				for(User userFollower: userFollowersList)
 				{
-					if(user != null)
+					if(userFollower != null)
 					{
-						followerList.add(user); 
+						userAllFollowersList.add(userFollower); 
 						//System.out.println(user.getName());
-						followerId = user.getId()+"";
-						InsertRelationshipSql(userId,followerId);
-						InsertSql(user);
+						followerId = userFollower.getId();
+						if(hasRecordInRelationship(userId,followerId) == false)
+						{
+							InsertRelationshipSql(userId+"",followerId+"");							
+						}
+						InsertSql(userFollower);
 					}
 				}  
 				cursor = weibo.getTmdNextCursor(res); 
-				Thread.sleep(5000);
+				Thread.sleep(3000);
 			} 
 			while(cursor != 0);
-			//System.out.println("  size: "+followerList.size()+" cursor: "+cursor+" friendsNUm: "+friendsNum); 
-			for(User user: followerList)
+			
+
+			//now we are going to store the followers of the followers of current user, and current user means a friend of mine who has lots of followers;
+			for(User userInAllFollowersList: userAllFollowersList)
 			{
-				getFollowers(user.getId()+"");				
-			} 
+				getFollowers(userInAllFollowersList.getId());				
+			} 			  
+			 
 		} 
 		catch (Exception e1) 
 		{ 
@@ -167,7 +200,7 @@ public class GetUsers
 		}
 	}
 	
-	public static void getFollowers(String userId) 
+	public static void getFollowers(long userId) 
 	{
 		try 
 		{ 
@@ -177,28 +210,31 @@ public class GetUsers
 			weibo.setToken(Access.accessToken, Access.accessTokenSecret);  
 			Thread.currentThread();
 			int cursor = 0;
-			String followerId = ""; 
-			List<User> userList;   
+			long followerId = 0; 
+			List<User> userFollowersList;   
 			do
 			{
-				Response res = weibo.getFollowersStatusesResponse(userId,cursor,200); 
-				userList = User.constructUser(res); 
-				if(userList.size() == 0)
+				Response res = weibo.getFollowersStatusesResponse(userId+"",cursor,200); 
+				userFollowersList = User.constructUser(res); 
+				if(userFollowersList.size() == 0)
 				{
 					break;
 				}
-				for(User user: userList)
+				for(User userFollower: userFollowersList)
 				{
-					if(user != null)
+					if(userFollower != null)
 					{  
 						//System.out.println(user.getName());
-						followerId = user.getId()+"";
-						InsertRelationshipSql(userId,followerId);
-						InsertSql(user);
+						followerId = userFollower.getId();
+						if(hasRecordInRelationship(userId,followerId) == false)
+						{
+							InsertRelationshipSql(userId+"",followerId+"");							
+						} 
+						InsertSql(userFollower);
 					}
 				}  
 				cursor = weibo.getTmdNextCursor(res); 
-				Thread.sleep(5000);
+				Thread.sleep(3000);
 			} 
 			while(cursor != 0);  
 		} 
@@ -209,11 +245,11 @@ public class GetUsers
 	}
 	
 	
-	public static void startFromMyself(List<String> myFriList)  
+	public static void startFromMyself(List<User> myFriList)  
 	{  
-		for(String myFriendId: myFriList)
+		for(User myFriend: myFriList)
 		{
-			getMyFriendsFollowers(myFriendId);
+			getMyFriendsFollowers(myFriend);
 		}
 	}
 	
@@ -222,9 +258,9 @@ public class GetUsers
 	 * @author swarm
 	 * @return the List of my friends' ID ~~
 	 */
-	public static List<String> getMyFriends()
+	public static List<User> getMyFriends()
 	{
-		List<String> myFriendsList = new ArrayList<String>();
+		List<User> myFriendsList = new ArrayList<User>();
 		try 
 		{
 			System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
@@ -244,17 +280,17 @@ public class GetUsers
 					for(User user: friendsList)
 					{
 						if(user != null)
-						{
-							myFriendsList.add(user.getId()+"");  
+						{ 
+							myFriendsList.add(user); 
 						} 
 			    	}
 					cursor = weibo.getTmdNextCursor(res);
 				}
 				while(cursor != 0);
 				int friendsNum=0;
-				for(String fri: myFriendsList)
+				for(User fri: myFriendsList)
 				{
-					//System.out.println("friId: "+fri);
+					System.out.println("friend screenName: "+fri.getScreenName());
 					friendsNum++;
 				}
 				System.out.println("in total:  "+friendsNum);
@@ -273,7 +309,7 @@ public class GetUsers
 	
 	public static void main(String[] args) throws ClassNotFoundException, SQLException
 	{ 
-		List<String> myFriendsList = new ArrayList<String>();
+		List<User> myFriendsList = new ArrayList<User>();
 		myFriendsList = getMyFriends();
 		/* test myFriendsList()
 		int friendsNum=0;

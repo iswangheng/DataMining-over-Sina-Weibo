@@ -50,7 +50,7 @@ public class GetComments {
 			// PreparedStatement ps=(PreparedStatement)
 			// conn.prepareStatement(insql);
 			ps.setLong(1, comment.getId());
-			ps.setString(2, comment.getUser().getName());
+			ps.setString(2, comment.getUser().getScreenName());
 			ps.setLong(3, comment.getUser().getId());
 			ps.setString(4, PublicMethods.dateToMySQLDateTimeString(comment
 					.getCreatedAt()));

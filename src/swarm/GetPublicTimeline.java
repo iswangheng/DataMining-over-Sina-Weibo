@@ -42,7 +42,7 @@ public class GetPublicTimeline {
 			Connection con = PublicMethods.getConnection();
 			PreparedStatement ps = con.prepareStatement(insql);
 			ps.setLong(1, status.getId());
-			ps.setString(2, status.getUser().getName());
+			ps.setString(2, status.getUser().getScreenName());
 			ps.setLong(3, status.getUser().getId());
 			ps.setString(4, PublicMethods.dateToMySQLDateTimeString(status
 					.getCreatedAt()));
