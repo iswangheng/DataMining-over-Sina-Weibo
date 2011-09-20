@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Date; 
 import java.util.List;
  
+import weibo4j.Status;
 import weibo4j.Weibo;
 import weibo4j.User; 
 import weibo4j.http.Response;
@@ -156,7 +157,14 @@ public class GetUsers
 			userId = user.getId();
 			List<User> userFollowersList; 
 			List<User> userAllFollowersList = new ArrayList<User>(); 
-			
+
+			Status userStatus = user.getStatus();
+			if(userStatus != null)
+			{
+				//System.out.println("STatus:  "+userStatus.getText());
+				//System.out.println("STatus:  "+userStatus.getUser().getName());
+				PublicMethods.InsertStatusSql(userStatus,user);
+			}
 			InsertSql(user);					//store current user 
 			
 			do									//get current user's followers and store all those followers~
@@ -179,6 +187,11 @@ public class GetUsers
 							InsertRelationshipSql(userId+"",followerId+"");							
 						}
 						InsertSql(userFollower);
+						Status followerStatus = userFollower.getStatus();		
+						if(followerStatus != null)
+						{
+							PublicMethods.InsertStatusSql(followerStatus,userFollower);
+						}
 					}
 				}  
 				cursor = weibo.getTmdNextCursor(res); 
@@ -188,11 +201,11 @@ public class GetUsers
 			
 
 			//now we are going to store the followers of the followers of current user, and current user means a friend of mine who has lots of followers;
-			for(User userInAllFollowersList: userAllFollowersList)
+		/*	for(User userInAllFollowersList: userAllFollowersList)
 			{
 				getFollowers(userInAllFollowersList.getId());				
 			} 			  
-			 
+			 */
 		} 
 		catch (Exception e1) 
 		{ 
@@ -230,7 +243,12 @@ public class GetUsers
 						{
 							InsertRelationshipSql(userId+"",followerId+"");							
 						} 
-						InsertSql(userFollower);
+						InsertSql(userFollower);						
+						Status followerStatus = userFollower.getStatus();
+						if(followerStatus != null)
+						{
+							PublicMethods.InsertStatusSql(followerStatus,userFollower);
+						}
 					}
 				}  
 				cursor = weibo.getTmdNextCursor(res); 
