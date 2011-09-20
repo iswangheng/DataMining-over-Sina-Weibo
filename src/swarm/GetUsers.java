@@ -197,6 +197,8 @@ public class GetUsers
 					}
 				}  
 				cursor = weibo.getTmdNextCursor(res); 
+				Thread.currentThread();
+				Thread.sleep(1000);
 			} 
 			while(cursor != 0);
 			System.out.println("size: "+userList.size()+" cursor: "+cursor+" friendsNUm: "+friendsNum); 

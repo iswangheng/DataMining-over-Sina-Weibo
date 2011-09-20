@@ -58,10 +58,7 @@ public class GetPublicTimeline {
 	}
 
 	public static boolean InsertSql(Status status) {
-		try {
-			/*
-			
-			 */
+		try { 
 			String insql = "insert ignore into status(id,userName,userId,createdAt,text,source,isTruncated,inReplyToStatusId,inReplyToUserId,isFavorited,inReplyToScreenName,latitude,longitude,thumbnail_pic,bmiddle_pic,original_pic,mid) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
  	    	Connection con = getConnection();	
 			PreparedStatement ps = con.prepareStatement(insql); 
@@ -95,7 +92,7 @@ public class GetPublicTimeline {
 		return false;
 	}
 
-	public static void getPublicTimeline()
+	public static void getPublicTimeline() throws InterruptedException
 	{
 		System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
 		System.setProperty("weibo4j.oauth.consumerSecret",
@@ -112,6 +109,8 @@ public class GetPublicTimeline {
 				{
 					InsertSql(status);
 				}
+				Thread.currentThread();
+				Thread.sleep(1000);
 			} 
 			while (true);                              // just kidding 
 		} 
@@ -122,7 +121,7 @@ public class GetPublicTimeline {
 
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		getPublicTimeline();
 	}
 }

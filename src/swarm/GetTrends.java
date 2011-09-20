@@ -82,7 +82,7 @@ public class GetTrends {
 		}
 	}
 
-	public static void getTrends() {
+	public static void getTrends() throws InterruptedException {
 		System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
 		System.setProperty("weibo4j.oauth.consumerSecret",
 				Weibo.CONSUMER_SECRET);
@@ -97,6 +97,8 @@ public class GetTrends {
 				//List<Trends> trends = weibo.getTrendsDaily(0);  // 每天的
 				//List<Trends> trends = weibo.getTrendsWeekly(0); // 每周的
 				InsertSql(trends.get(0));
+				Thread.currentThread();
+				Thread.sleep(1000);
 			} catch (WeiboException e) {
 				e.printStackTrace();
 			}
@@ -104,7 +106,7 @@ public class GetTrends {
 
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		getTrends();
 	}
 }

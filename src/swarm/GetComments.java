@@ -117,7 +117,7 @@ public class GetComments {
 	}
 
 	public static void getComments() throws ClassNotFoundException,
-			SQLException {
+			SQLException, InterruptedException {
 		System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
 		System.setProperty("weibo4j.oauth.consumerSecret",
 				Weibo.CONSUMER_SECRET);
@@ -138,6 +138,8 @@ public class GetComments {
 					for (Comment comment : comments) {
 						InsertSql(comment, statusId);
 					}
+					Thread.currentThread();
+					Thread.sleep(1000);
 				} catch (SQLException ex) {
 					System.err.println("SQLException: " + ex.getMessage());
 				} catch (WeiboException e) {
@@ -149,7 +151,7 @@ public class GetComments {
 	}
 
 	public static void main(String[] args) throws WeiboException,
-			ClassNotFoundException, SQLException {
+			ClassNotFoundException, SQLException, InterruptedException {
 		getComments();
 	}
 }
