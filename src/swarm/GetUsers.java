@@ -1,3 +1,6 @@
+	/**
+	 * @author swarm 
+	 */
 package swarm;
  /**
   * 
@@ -36,6 +39,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -48,8 +52,7 @@ import weibo4j.WeiboException;
 import weibo4j.http.Response;
  
 public class GetUsers
-{
-	
+{ 
 	public static Connection getConnection() throws SQLException,
 	java.lang.ClassNotFoundException 
 	{
@@ -164,19 +167,19 @@ public class GetUsers
 	}
 
 	
-	public static void getUsers(String userId) 
+	public static void getMyFriendsFollowers(String userId) 
 	{
 		try 
-		{
+		{ 
 			System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
 			System.setProperty("weibo4j.oauth.consumerSecret", Weibo.CONSUMER_SECRET);
 			Weibo weibo = new Weibo();
 			weibo.setToken(Access.accessToken, Access.accessTokenSecret);  
+			Thread.currentThread();
 			int cursor = 0;
-			String followerId = "";
-			String nextUserId = null;
+			String followerId = ""; 
 			List<User> userList; 
-			int friendsNum = 0;
+			List<User> followerList = new ArrayList<User>(); 
 			do
 			{
 				Response res = weibo.getFollowersStatusesResponse(userId,cursor,200); 
@@ -189,62 +192,148 @@ public class GetUsers
 				{
 					if(user != null)
 					{
-						friendsNum++;
-						System.out.println(user.getName());
+						followerList.add(user); 
+						//System.out.println(user.getName());
 						followerId = user.getId()+"";
 						InsertRelationshipSql(userId,followerId);
 						InsertSql(user);
 					}
 				}  
 				cursor = weibo.getTmdNextCursor(res); 
-				Thread.currentThread();
-				Thread.sleep(1000);
+				Thread.sleep(5000);
 			} 
 			while(cursor != 0);
-			System.out.println("size: "+userList.size()+" cursor: "+cursor+" friendsNUm: "+friendsNum); 
-			if(userList.size() != 0)				//will get the followers of the followers using  recursion
+			//System.out.println("  size: "+followerList.size()+" cursor: "+cursor+" friendsNUm: "+friendsNum); 
+			for(User user: followerList)
 			{
-				for(User user: userList)
-				{
-					nextUserId = user.getId()+"";
-					getUsers(nextUserId); 
-				}
+				getFollowers(user.getId()+"");				
 			} 
 		} 
 		catch (Exception e1) 
 		{ 
 			e1.printStackTrace();
 		}
-			System.exit(0); 
 	}
 	
-	public static void startFromDatabase() throws SQLException, ClassNotFoundException
-	{ 
-		Connection con1 = getConnection();
-		java.sql.Statement stmt = con1.createStatement(
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
-		ResultSet rset = stmt.executeQuery("select * from status");
-		do 
-		{
-			try 
-			{ 
-				rset.next();
-				String userId = rset.getLong(3)+""; 
-				//System.out.println("userID: "+userId+"  row: "+rset.getRow());
-				getUsers(userId);
-			} 
-			catch (SQLException ex) 
+	public static void getFollowers(String userId) 
+	{
+		try 
+		{ 
+			System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
+			System.setProperty("weibo4j.oauth.consumerSecret", Weibo.CONSUMER_SECRET);
+			Weibo weibo = new Weibo();
+			weibo.setToken(Access.accessToken, Access.accessTokenSecret);  
+			Thread.currentThread();
+			int cursor = 0;
+			String followerId = ""; 
+			List<User> userList;   
+			do
 			{
-				System.err.println("SQLException: " + ex.getMessage());
-			}  
+				Response res = weibo.getFollowersStatusesResponse(userId,cursor,200); 
+				userList = User.constructUser(res); 
+				if(userList.size() == 0)
+				{
+					break;
+				}
+				for(User user: userList)
+				{
+					if(user != null)
+					{  
+						//System.out.println(user.getName());
+						followerId = user.getId()+"";
+						InsertRelationshipSql(userId,followerId);
+						InsertSql(user);
+					}
+				}  
+				cursor = weibo.getTmdNextCursor(res); 
+				Thread.sleep(5000);
+			} 
+			while(cursor != 0);  
+		} 
+		catch (Exception e1) 
+		{ 
+			e1.printStackTrace();
 		}
-		while (!rset.isLast());
-		con1.close(); 
+	}
+	
+	
+	public static void startFromMyself(List<String> myFriList)  
+	{  
+		for(String myFriendId: myFriList)
+		{
+			getMyFriendsFollowers(myFriendId);
+		}
+	}
+	
+	
+	/**
+	 * @author swarm
+	 * @return the List of my friends' ID ~~
+	 */
+	public static List<String> getMyFriends()
+	{
+		List<String> myFriendsList = new ArrayList<String>();
+		try 
+		{
+			System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
+			System.setProperty("weibo4j.oauth.consumerSecret", Weibo.CONSUMER_SECRET);
+			Weibo weibo = new Weibo();
+			weibo.setToken(Access.accessToken, Access.accessTokenSecret);
+			int cursor;
+			cursor = 0;
+			try 
+			{
+				do
+				{
+					List<User> friendsList=  new ArrayList<User>();
+					String currentUserId = "2407207504";
+					Response res = weibo.getFriendsStatusesResponse(currentUserId, cursor, 200); 
+					friendsList = User.constructUser(res);  
+					for(User user: friendsList)
+					{
+						if(user != null)
+						{
+							myFriendsList.add(user.getId()+"");  
+						} 
+			    	}
+					cursor = weibo.getTmdNextCursor(res);
+				}
+				while(cursor != 0);
+				int friendsNum=0;
+				for(String fri: myFriendsList)
+				{
+					System.out.println("friId: "+fri);
+					friendsNum++;
+				}
+				System.out.println("in total:  "+friendsNum);
+			}
+			catch (Exception e1) 
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace(); 
+			} 
+		} 
+		catch (Exception ioe) 
+		{
+			System.out.println("Failed to read the system input."); 
+		}
+		return myFriendsList;
 	}
 	
 	public static void main(String[] args) throws ClassNotFoundException, SQLException
-	{
-		startFromDatabase();
+	{ 
+		List<String> myFriendsList = new ArrayList<String>();
+		myFriendsList = getMyFriends();
+		/*
+		 * test myFriendsList()
+		int friendsNum=0;
+		for(String fri: myFriendsList)
+		{
+			System.out.println("friId: "+fri);
+			friendsNum++;
+		}
+		System.out.println("in total:  "+friendsNum);
+		*/
+		startFromMyself(myFriendsList);		
 	}	
 }
