@@ -184,13 +184,13 @@ public class GetUsers
 						followerId = userFollower.getId();
 						if(hasRecordInRelationship(userId,followerId) == false)
 						{
-							InsertRelationshipSql(userId+"",followerId+"");							
-						}
-						InsertSql(userFollower);
-						Status followerStatus = userFollower.getStatus();		
-						if(followerStatus != null)
-						{
-							PublicMethods.InsertStatusSql(followerStatus,userFollower);
+							InsertRelationshipSql(userId+"",followerId+"");		
+							InsertSql(userFollower);		
+							Status followerStatus = userFollower.getStatus();		
+							if(followerStatus != null)
+							{
+								PublicMethods.InsertStatusSql(followerStatus,userFollower);
+							}			
 						}
 					}
 				}  
@@ -241,14 +241,14 @@ public class GetUsers
 						followerId = userFollower.getId();
 						if(hasRecordInRelationship(userId,followerId) == false)
 						{
-							InsertRelationshipSql(userId+"",followerId+"");							
+							InsertRelationshipSql(userId+"",followerId+"");		
+							InsertSql(userFollower);						
+							Status followerStatus = userFollower.getStatus();
+							if(followerStatus != null)
+							{
+								PublicMethods.InsertStatusSql(followerStatus,userFollower);
+							}
 						} 
-						InsertSql(userFollower);						
-						Status followerStatus = userFollower.getStatus();
-						if(followerStatus != null)
-						{
-							PublicMethods.InsertStatusSql(followerStatus,userFollower);
-						}
 					}
 				}  
 				cursor = weibo.getTmdNextCursor(res); 
