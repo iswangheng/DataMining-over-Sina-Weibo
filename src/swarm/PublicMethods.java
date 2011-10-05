@@ -3,6 +3,7 @@ package swarm;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
@@ -22,7 +23,138 @@ public class PublicMethods
 		Connection con = DriverManager.getConnection(url, username, password);
 		return con;
 	}
+	
+	
+	public static boolean InsertUserSql(User user) {
+		try 
+		{ 
+			String insql = "insert ignore into users(id,screenName,province,city" +
+					",location,description,url,profileImageUrl" +
+					",userDomain,gender,followersCount,friendsCount" +
+					",statusesCount,createdAt,verified) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		    	Connection conUsers = PublicMethods.getConnection();	
+			PreparedStatement ps = conUsers.prepareStatement(insql);   
+			ps.setLong(1, user.getId());
+			ps.setString(2, user.getScreenName());
+			ps.setInt(3, user.getProvince());
+			ps.setInt(4,  user.getCity());
+			ps.setString(5, user.getLocation());
+			ps.setString(6,  user.getDescription());
+			String urlString = "";
+			if(user.getURL() != null)
+			{
+				urlString = user.getURL().toString();
+			}
+			ps.setString(7,  urlString);
+			String profileImageURL = "";
+			if(user.getProfileImageURL() != null)
+			{
+				profileImageURL = user.getProfileImageURL().toString();
+			}
+			ps.setString(8,  profileImageURL);
+			ps.setString(9,  user.getUserDomain());
+			ps.setString(10,  user.getGender());
+			ps.setInt(11,  user.getFollowersCount());
+			ps.setInt(12,  user.getFriendsCount());
+			ps.setInt(13,  user.getStatusesCount());
+			ps.setString(14,  PublicMethods.dateToMySQLDateTimeString(user.getCreatedAt()));   
+			ps.setBoolean(15,  user.isVerified());
+	
+			int result = ps.executeUpdate();
+			conUsers.close(); 
+			if (result > 0)
+				return true;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}	 	
+		return false;
+	}
 
+	public static boolean InsertRelationshipSql(Long userId, Long followerId)
+	{
+		try 
+		{ 
+			String insql = "insert ignore into relationship(userId,followerId) values(?,?)";
+		    	Connection conRelationship = PublicMethods.getConnection();	
+			PreparedStatement ps = conRelationship.prepareStatement(insql);   
+			ps.setLong(1, userId);
+			ps.setLong(2, followerId); 
+			int result = ps.executeUpdate();
+			conRelationship.close(); 
+			if (result > 0)
+				return true;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}	 	
+		return false;
+	}
+	
+	
+	
+	public static boolean hasRecordInUser(long userId) throws ClassNotFoundException, SQLException
+	{
+		String query = "select count(*) from users where  id = "+userId; 
+		Connection con = PublicMethods.getConnection();	
+		PreparedStatement ps = con.prepareStatement(query); 
+		ResultSet rs = ps.executeQuery();
+		rs.next();
+		int countNum = rs.getInt(1);
+		con.close();
+		//System.out.println("CountNum is : "+countNum);
+		if(countNum == 0)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
+	public static boolean hasRecordInRelationship(long userId, long followerId) throws ClassNotFoundException, SQLException
+	{
+		String query = "select count(*) from relationship where  userId = "+userId+" and followerId = "+followerId; 
+		Connection con = PublicMethods.getConnection();	
+		PreparedStatement ps = con.prepareStatement(query); 
+		ResultSet rs = ps.executeQuery();
+		rs.next();
+		int countNum = rs.getInt(1);
+		con.close();
+		//System.out.println("CountNum is : "+countNum);
+		if(countNum == 0)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
+	public static boolean hasUserRecordInRelationship(long userId) throws ClassNotFoundException, SQLException
+	{
+		String query = "select count(*) from relationship where  userId = "+userId; 
+		Connection con = PublicMethods.getConnection();	
+		PreparedStatement ps = con.prepareStatement(query); 
+		ResultSet rs = ps.executeQuery();
+		rs.next();
+		int countNum = rs.getInt(1);
+		con.close();
+		//System.out.println("CountNum is : "+countNum);
+		if(countNum == 0)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
 	public static String dateToMySQLDateTimeString(Date date)
 	{
 		final String[] MONTH = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -54,6 +186,9 @@ public class PublicMethods
 		return ret.toString();
 	}
 	
+	
+	
+	/*  wont be useful again....
 	public static boolean InsertStatusSql(Status status) 
 	{
 		try 
@@ -129,5 +264,5 @@ public class PublicMethods
 		}
 		return false;
 	}
-	
+	  */
 }
