@@ -7,11 +7,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
+import weibo4j.Comment;
 import weibo4j.Status;
 import weibo4j.User;
+import weibo4j.Weibo;
 
 public class PublicMethods
-{
+{	
+	public static Weibo weibo;
+	public static void setWeibo() 
+	{
+		System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
+    	System.setProperty("weibo4j.oauth.consumerSecret", Weibo.CONSUMER_SECRET); 
+		weibo = new Weibo();
+		weibo.setToken(Access.accessToken,Access.accessTokenSecret); 
+	}
+	
 	public static Connection getConnection() throws SQLException,java.lang.ClassNotFoundException 
 	{
 		Class.forName("com.mysql.jdbc.Driver");
@@ -25,14 +36,13 @@ public class PublicMethods
 	}
 	
 	
-	public static boolean InsertUserSql(User user) {
+	public static boolean InsertUserSql(User user,Connection conUsers) {
 		try 
 		{ 
 			String insql = "insert ignore into users(id,screenName,province,city" +
 					",location,description,url,profileImageUrl" +
 					",userDomain,gender,followersCount,friendsCount" +
 					",statusesCount,createdAt,verified) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		    	Connection conUsers = PublicMethods.getConnection();	
 			PreparedStatement ps = conUsers.prepareStatement(insql);   
 			ps.setLong(1, user.getId());
 			ps.setString(2, user.getScreenName());
@@ -61,7 +71,6 @@ public class PublicMethods
 			ps.setBoolean(15,  user.isVerified());
 	
 			int result = ps.executeUpdate();
-			conUsers.close(); 
 			if (result > 0)
 				return true;
 		}
@@ -72,17 +81,15 @@ public class PublicMethods
 		return false;
 	}
 
-	public static boolean InsertRelationshipSql(Long userId, Long followerId)
+	public static boolean InsertRelationshipSql(Connection conRelationship,Long userId, Long followerId)
 	{
 		try 
 		{ 
 			String insql = "insert ignore into relationship(userId,followerId) values(?,?)";
-		    	Connection conRelationship = PublicMethods.getConnection();	
 			PreparedStatement ps = conRelationship.prepareStatement(insql);   
 			ps.setLong(1, userId);
 			ps.setLong(2, followerId); 
-			int result = ps.executeUpdate();
-			conRelationship.close(); 
+			int result = ps.executeUpdate(); 
 			if (result > 0)
 				return true;
 		}
@@ -185,38 +192,36 @@ public class PublicMethods
 
 		return ret.toString();
 	}
-	
-	
-	
-	/*  wont be useful again....
-	public static boolean InsertStatusSql(Status status) 
+	 
+ 
+	public static boolean InsertStatusSql(Connection conStatus,Status status, int rtCounts,int commentCounts) 
 	{
 		try 
 		{
-			String insql = "insert ignore into status(id,userName,userId,createdAt,text,source,isTruncated,inReplyToStatusId,inReplyToUserId,isFavorited,inReplyToScreenName,latitude,longitude,thumbnail_pic,bmiddle_pic,original_pic,mid) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-			Connection con = PublicMethods.getConnection();
-			PreparedStatement ps = con.prepareStatement(insql);
+			String insql = "insert ignore into status(id,userScreenName,userId,createdAt,text,source,latitude,longitude,original_pic,retweeted_statusId,rtCounts,commentCounts,mid) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			PreparedStatement ps = conStatus.prepareStatement(insql);
 			ps.setLong(1, status.getId());
 			ps.setString(2, status.getUser().getName());
 			ps.setLong(3, status.getUser().getId());
-			ps.setString(4, PublicMethods.dateToMySQLDateTimeString(status
-					.getCreatedAt()));
+			ps.setString(4, PublicMethods.dateToMySQLDateTimeString(status.getCreatedAt()));
 			ps.setString(5, status.getText());
-			ps.setString(6, status.getSource());
-			ps.setBoolean(7, status.isTruncated());
-			ps.setLong(8, status.getInReplyToStatusId());
-			ps.setLong(9, status.getInReplyToUserId());
-			ps.setBoolean(10, status.isFavorited());
-			ps.setString(11, status.getInReplyToScreenName());
-			ps.setDouble(12, status.getLatitude());
-			ps.setDouble(13, status.getLongitude());
-			ps.setString(14, status.getThumbnail_pic());
-			ps.setString(15, status.getBmiddle_pic());
-			ps.setString(16, status.getOriginal_pic());
-			ps.setString(17, status.getMid());
+			ps.setString(6, status.getSource()); 
+			ps.setDouble(7, status.getLatitude());
+			ps.setDouble(8, status.getLongitude());
+			ps.setString(9, status.getOriginal_pic());
+			int retweetStatusId = 0;
+			Status retweetStatus = null;
+			retweetStatus = status.getRetweeted_status();
+			if(retweetStatus != null)
+			{
+				retweetStatusId = (int) retweetStatus.getId();
+			}
+			ps.setLong(10, retweetStatusId);
+			ps.setInt(11, rtCounts);
+			ps.setInt(12, commentCounts);
+			ps.setString(13, status.getMid());
 
-			int result = ps.executeUpdate();
-			con.close();
+			int result = ps.executeUpdate(); 
 			if (result > 0)
 				return true;
 		}
@@ -227,34 +232,20 @@ public class PublicMethods
 		return false;
 	}
 	
-	public static boolean InsertStatusSql(Status status,User user) 
+	public static boolean InsertCommentsSql(Connection conComments,Comment comment, long statusId) 
 	{
 		try 
 		{
-			String insql = "insert ignore into status(id,userName,userId,createdAt,text,source,isTruncated,inReplyToStatusId,inReplyToUserId,isFavorited,inReplyToScreenName,latitude,longitude,thumbnail_pic,bmiddle_pic,original_pic,mid) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-			Connection con = PublicMethods.getConnection();
-			PreparedStatement ps = con.prepareStatement(insql);
-			ps.setLong(1, status.getId());
-			ps.setString(2, user.getScreenName());
-			ps.setLong(3, user.getId());
-			ps.setString(4, PublicMethods.dateToMySQLDateTimeString(status
-					.getCreatedAt()));
-			ps.setString(5, status.getText());
-			ps.setString(6, status.getSource());
-			ps.setBoolean(7, status.isTruncated());
-			ps.setLong(8, status.getInReplyToStatusId());
-			ps.setLong(9, status.getInReplyToUserId());
-			ps.setBoolean(10, status.isFavorited());
-			ps.setString(11, status.getInReplyToScreenName());
-			ps.setDouble(12, status.getLatitude());
-			ps.setDouble(13, status.getLongitude());
-			ps.setString(14, status.getThumbnail_pic());
-			ps.setString(15, status.getBmiddle_pic());
-			ps.setString(16, status.getOriginal_pic());
-			ps.setString(17, status.getMid());
-
-			int result = ps.executeUpdate();
-			con.close();
+			String insql = "insert ignore into comments(id,userScreenName,userId,createdAt,statusId,text,source) values(?,?,?,?,?,?,?)";
+			PreparedStatement ps = conComments.prepareStatement(insql);
+			ps.setLong(1, comment.getId());
+			ps.setString(2, comment.getUser().getScreenName());
+			ps.setLong(3, comment.getUser().getId());
+			ps.setString(4, PublicMethods.dateToMySQLDateTimeString(comment.getCreatedAt()));
+			ps.setLong(5, statusId);
+			ps.setString(6, comment.getText());
+			ps.setString(7, comment.getSource()); 
+			int result = ps.executeUpdate(); 
 			if (result > 0)
 				return true;
 		}
@@ -264,5 +255,5 @@ public class PublicMethods
 		}
 		return false;
 	}
-	  */
+	 
 }

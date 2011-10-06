@@ -34,16 +34,11 @@ PRIMARY KEY (`id`)
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 */
-import java.sql.Connection;
-import java.sql.PreparedStatement; 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.Connection; 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date; 
+import java.util.Collections; 
 import java.util.List;
 
-import weibo4j.Status;
 import weibo4j.Weibo;
 import weibo4j.User; 
 import weibo4j.http.Response;
@@ -55,23 +50,21 @@ public class GetUsersThread implements Runnable
 	{
 		try 
 		{ 
-			System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
-			System.setProperty("weibo4j.oauth.consumerSecret", Weibo.CONSUMER_SECRET);
-			Weibo weibo = new Weibo();
-			weibo.setToken(Access.accessToken, Access.accessTokenSecret);   
 			int cursor = 0;
 			long userId = 0;
 			long followerId = 0; 
 			userId = user.getId();
 			List<User> userFollowersList; 
 			List<User> userAllFollowersList = new ArrayList<User>(); 
-	
+
+	    	Connection conUsers = PublicMethods.getConnection();	
+	    	Connection conRelationship = PublicMethods.getConnection();	
 			//Status userStatus = user.getStatus();  
-			PublicMethods.InsertUserSql(user);					//store current user 
+			PublicMethods.InsertUserSql(user,conUsers);					//store current user 
 			
 			do									//get current user's followers and store all those followers~
 			{
-				Response res = weibo.getFollowersStatusesResponse(userId+"",cursor,200); 
+				Response res = PublicMethods.weibo.getFollowersStatusesResponse(userId+"",cursor,200); 
 				userFollowersList = User.constructUser(res); 
 				if(userFollowersList.size() == 0)
 				{
@@ -86,17 +79,18 @@ public class GetUsersThread implements Runnable
 						followerId = userFollower.getId();
 						if(PublicMethods.hasRecordInUser(followerId) == false)
 						{ 
-							PublicMethods.InsertRelationshipSql(userId,followerId);		
-							PublicMethods.InsertUserSql(userFollower);		 
+							PublicMethods.InsertRelationshipSql(conRelationship,userId,followerId);		
+							PublicMethods.InsertUserSql(userFollower,conUsers);		 
 						}
 					}
 				}  
-				cursor = weibo.getTmdNextCursor(res); 
+				cursor = PublicMethods.weibo.getTmdNextCursor(res); 
 				Thread.sleep(1000);
 			} 
 			while(cursor != 0);
-			
-	
+
+			conUsers.close(); 
+			conRelationship.close();
 			//now we are going to store the followers of the followers of current user, and current user means a friend of mine who has lots of followers;
 		    /*for(User userInAllFollowersList: userAllFollowersList)
 			{
@@ -114,17 +108,15 @@ public class GetUsersThread implements Runnable
 	public static void getFollowers(long userId) 
 	{
 		try 
-		{ 
-			System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
-			System.setProperty("weibo4j.oauth.consumerSecret", Weibo.CONSUMER_SECRET);
-			Weibo weibo = new Weibo();
-			weibo.setToken(Access.accessToken, Access.accessTokenSecret);   
+		{  
 			int cursor = 0;
 			long followerId = 0; 
 			List<User> userFollowersList;   
+	    	Connection conUsers = PublicMethods.getConnection();	
+	    	Connection conRelationship = PublicMethods.getConnection();	
 			do
 			{
-				Response res = weibo.getFollowersStatusesResponse(userId+"",cursor,200); 
+				Response res = PublicMethods.weibo.getFollowersStatusesResponse(userId+"",cursor,200); 
 				userFollowersList = User.constructUser(res); 
 				if(userFollowersList.size() == 0)
 				{
@@ -138,16 +130,18 @@ public class GetUsersThread implements Runnable
 						followerId = userFollower.getId();
 						if(PublicMethods.hasRecordInRelationship(userId,followerId) == false)
 						{
-							PublicMethods.InsertRelationshipSql(userId,followerId);		
-							PublicMethods.InsertUserSql(userFollower);						
+							PublicMethods.InsertRelationshipSql(conRelationship,userId,followerId);		
+							PublicMethods.InsertUserSql(userFollower,conUsers);						
 							//Status followerStatus = userFollower.getStatus(); 
 						} 
 					}
 				}  
-				cursor = weibo.getTmdNextCursor(res); 
-				Thread.sleep(1000);
+				cursor = PublicMethods.weibo.getTmdNextCursor(res); 
+				Thread.sleep(2000);
 			} 
 			while(cursor != 0);  
+			conUsers.close();
+			conRelationship.close();
 		} 
 		catch (Exception e1) 
 		{ 

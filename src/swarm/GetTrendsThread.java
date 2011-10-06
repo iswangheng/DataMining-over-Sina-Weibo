@@ -50,27 +50,22 @@ public class GetTrendsThread implements Runnable
 	
 	
 	public  void run()
-	{
-		System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
-		System.setProperty("weibo4j.oauth.consumerSecret", Weibo.CONSUMER_SECRET);
+	{ 
 		Paging paging = new Paging();
 		paging.setCount(20);
 		paging.setPage(1);
 		do 
 		{
 				try 
-				{
-					Weibo weibo = new Weibo();
-					weibo.setToken(Access.accessToken, Access.accessTokenSecret);
-					List<Trends> trends = weibo.getTrendsHourly(0); // 每小时的
+				{ 
+					List<Trends> trends = PublicMethods.weibo.getTrendsHourly(0); // 每小时的
 					// List<Trends> trends = weibo.getTrendsDaily(0); // 每天的
 					// List<Trends> trends = weibo.getTrendsWeekly(0); // 每周的
 					InsertSql(trends.get(0)); 
 					Thread.sleep(pauseTime);
 				} catch (WeiboException e) {
 					e.printStackTrace();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+				} catch (InterruptedException e) { 
 					e.printStackTrace();
 			}
 		} while (true);
