@@ -1,17 +1,12 @@
 package swarm;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Date;
+import java.sql.Connection; 
+import java.sql.PreparedStatement; 
 import java.util.List;
 
-import weibo4j.Paging;
-import weibo4j.Status;
+import weibo4j.Paging; 
 import weibo4j.Trend;
-import weibo4j.Trends;
-import weibo4j.Weibo;
+import weibo4j.Trends; 
 import weibo4j.WeiboException;
  
 public class GetTrendsThread implements Runnable
