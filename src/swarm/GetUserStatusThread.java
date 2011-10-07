@@ -94,7 +94,7 @@ public class GetUserStatusThread implements Runnable
 		        	} 
 					pageNum++;
 				}
-				Thread.sleep(2000);
+				Thread.sleep(2777);
 			}
 			while(true);
 			conStatus.close();

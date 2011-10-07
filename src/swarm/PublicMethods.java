@@ -15,12 +15,14 @@ import weibo4j.Weibo;
 public class PublicMethods
 {	
 	public static Weibo weibo;
-	public static void setWeibo() 
-	{
-		System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
-    	System.setProperty("weibo4j.oauth.consumerSecret", Weibo.CONSUMER_SECRET); 
+	public static void setWeibo(String consumerKey, String consumerSecret,String accessToken,String accessTokenSecret) 
+	{   
+		Weibo.CONSUMER_KEY = consumerKey;
+		Weibo.CONSUMER_SECRET = consumerSecret;
+		System.setProperty("weibo4j.oauth.consumerKey", consumerKey);
+    	System.setProperty("weibo4j.oauth.consumerSecret", consumerSecret); 
 		weibo = new Weibo();
-		weibo.setToken(Access.accessToken,Access.accessTokenSecret); 
+		weibo.setToken(accessToken, accessTokenSecret); 
 	}
 	
 	public static Connection getConnection() throws SQLException,java.lang.ClassNotFoundException 

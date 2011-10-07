@@ -167,11 +167,7 @@ public class GetUsersThread implements Runnable
 	{
 		List<User> myFriendsList = new ArrayList<User>();
 		try 
-		{
-			System.setProperty("weibo4j.oauth.consumerKey", Weibo.CONSUMER_KEY);
-			System.setProperty("weibo4j.oauth.consumerSecret", Weibo.CONSUMER_SECRET);
-			Weibo weibo = new Weibo();
-			weibo.setToken(Access.accessToken, Access.accessTokenSecret);
+		{ 
 			int cursor;
 			cursor = 0;
 			try 
@@ -180,7 +176,7 @@ public class GetUsersThread implements Runnable
 				{
 					List<User> friendsList=  new ArrayList<User>();
 					String currentUserId = "2407207504";
-					Response res = weibo.getFriendsStatusesResponse(currentUserId, cursor, 200); 
+					Response res = PublicMethods.weibo.getFriendsStatusesResponse(currentUserId, cursor, 200); 
 					friendsList = User.constructUser(res);  
 					for(User user: friendsList)
 					{
@@ -189,7 +185,7 @@ public class GetUsersThread implements Runnable
 							myFriendsList.add(user); 
 						} 
 			    	}
-					cursor = weibo.getTmdNextCursor(res);
+					cursor = PublicMethods.weibo.getTmdNextCursor(res);
 				}
 				while(cursor != 0);
 				int friendsNum=0;

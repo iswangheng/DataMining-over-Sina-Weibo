@@ -39,12 +39,11 @@ import weibo4j.http.HttpClient;
     /*package*/ WeiboSupport(){
         this(null, null);
     }
-    /*package*/ WeiboSupport(String userId, String password){
+    /*package*/ WeiboSupport(String useId, String password){
+ 
         USE_SSL = Configuration.useSSL();
         setClientVersion(null);
-        setClientURL(null);
-//        setUserId(userId);
-//        setPassword(password);
+        setClientURL(null); 
     }
 
     /**

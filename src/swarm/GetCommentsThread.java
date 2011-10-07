@@ -49,7 +49,7 @@ public class GetCommentsThread implements Runnable
 								PublicMethods.InsertCommentsSql(conComments, comment, statusId);
 							} 
 						}
-						Thread.sleep(2000);
+						Thread.sleep(3000);
 					}
 					while(true);
 				} catch (SQLException ex) {
@@ -57,9 +57,8 @@ public class GetCommentsThread implements Runnable
 				} catch (WeiboException e) {
 					e.printStackTrace();
 				}
-			}
-			while(false);
-			//while (!rset.isLast());
+			} 
+			while (!rset.isLast());
 			conComments.close(); 
 			Thread.sleep(3600000);
 		} while (true);
