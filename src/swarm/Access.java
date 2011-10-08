@@ -13,8 +13,8 @@ public final class Access {
 	{
 		final static String consumerKey = "3773352772";
 		final static String consumerSecret = "0a710d84b9de409616dfcc7c400456d8";
-		final static String accessToken = "a2104e29e4226f5b8d54de087f57834e";
-		final static String accessTokenSecret = "8eb86f0c4a4791b3341a1eb2c58fc234";		
+		final static String accessToken = "bf94c54baa219c10a11953fb6ce7f72a";
+		final static String accessTokenSecret = "a0e7b19de01d2031a2a00966f88fe506";		
 	}
 
 	

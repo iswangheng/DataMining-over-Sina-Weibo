@@ -3,6 +3,8 @@ package swarm;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import weibo4j.Count;
@@ -11,23 +13,30 @@ import weibo4j.Status;
 import weibo4j.WeiboException;
 
 public class GetUserStatusThread implements Runnable
-{
-	
+{ 
 	public static void getUserStatus() throws ClassNotFoundException, SQLException, WeiboException, InterruptedException
 	{
 		int pageNum = 1;
 		Connection conUser = PublicMethods.getConnection();
 		java.sql.Statement stmt = conUser.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-		ResultSet rset = stmt.executeQuery("select * from users order by followersCount desc");
+		ResultSet rset = stmt.executeQuery("select * from users");
+		List<Long> userIdList = new ArrayList<Long>();
 		long userId = (long)0;
 		do
 		{
 			rset.next();
-			userId = rset.getLong(1);		
+			userId = rset.getLong(1);	
+			Long userIdLongValue = new Long(userId);
+			userIdList.add(userIdLongValue);
+		}
+		while(!rset.isLast());
+		Collections.shuffle(userIdList);
+		for(Long userIdLong:userIdList)
+		{ 
+			userId = userIdLong.longValue();		
 			Paging pag = new Paging(); 
 			pag.setCount(200); 
-			pageNum = 1;
-	    	Connection conStatus = PublicMethods.getConnection();	
+			pageNum = 1; 
 			do
 			{
 				pag.setPage(pageNum);
@@ -82,7 +91,7 @@ public class GetUserStatusThread implements Runnable
 					            rtCounts = (int) count.getRt();
 					            commentCounts = (int)count.getComments();		
 								//System.out.println("has count: "+"rtCounts: "+rtCounts+" commentCounts: "+commentCounts);
-					            PublicMethods.InsertStatusSql(conStatus, statuses.get(statusIndex), rtCounts, commentCounts); 	 
+					            PublicMethods.InsertStatusSql(conUser, statuses.get(statusIndex), rtCounts, commentCounts); 	 
 					            statusIndex++;
 				            }
 			            }
@@ -94,13 +103,11 @@ public class GetUserStatusThread implements Runnable
 		        	} 
 					pageNum++;
 				}
-				Thread.sleep(2777);
+				Thread.sleep(2500);
 			}
-			while(true);
-			conStatus.close();
-			System.out.println("Oops, Empty~~");
-		}
-		while(!rset.isLast());
+			while(true); 
+			System.out.println("Oops, Empty~~");  
+		} 
 		conUser.close();
 	}
 	

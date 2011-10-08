@@ -3,6 +3,8 @@ package swarm;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import weibo4j.Comment;
@@ -21,25 +23,36 @@ public class GetCommentsThread implements Runnable
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
 			ResultSet rset = stmt.executeQuery("select * from status");
-			int pageNum = 1;
-			do 
+			List<Long> statusIdList = new ArrayList<Long>();
+			int pageNum = 1;		
+			long statusId = (long)0; 
+			do
+			{
+				rset.next();
+				statusId = rset.getLong(1);	
+				Long userIdLongValue = new Long(statusId);
+				statusIdList.add(userIdLongValue);
+			}
+			while(!rset.isLast());
+			Collections.shuffle(statusIdList);
+			for(Long statusIdLong:statusIdList) 
 			{
 				try 
-				{ 
-					rset.next();
-					Long statusId = rset.getLong(1);
+				{  
+					statusId = statusIdLong.longValue();
 					Paging pag = new Paging(); 
 					pag.setCount(100); 
 					pageNum = 1;
 					do
 					{
 						pag.setPage(pageNum);
-						List<Comment> comments = PublicMethods.weibo.getComments(statusId.toString(),pag);
+						List<Comment> comments = PublicMethods.weibo.getComments(statusId+"",pag);
 						//List<Comment> comments = PublicMethods.weibo.getComments("3343531616094195",pag);
 						
 						pageNum++;
 						if(comments.isEmpty())
 						{
+							Thread.sleep(2500);
 							break;
 						}
 						else
@@ -49,18 +62,14 @@ public class GetCommentsThread implements Runnable
 								PublicMethods.InsertCommentsSql(conComments, comment, statusId);
 							} 
 						}
-						Thread.sleep(3000);
+						Thread.sleep(2500);
 					}
 					while(true);
-				} catch (SQLException ex) {
-					System.err.println("SQLException: " + ex.getMessage());
 				} catch (WeiboException e) {
 					e.printStackTrace();
 				}
-			} 
-			while (!rset.isLast());
-			conComments.close(); 
-			Thread.sleep(3600000);
+			}  
+			conComments.close();  
 		} while (true);
 	}
 	

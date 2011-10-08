@@ -14,14 +14,19 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import javax.swing.*;
+
 import java.awt.Toolkit;
 import java.awt.Dimension;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Timer;
 
-
-public class SinaCrawler 
+public class SinaCrawler  implements ActionListener 
 { 
 	  public SinaCrawler()
 	    {
+		  	printStream = new PrintStream(new MyOutputStream());
+		  	
 			JFrame crawlerFrame = new JFrame();
 			crawlerFrame.setTitle("A Sina Weibo Crawler!"); 
 			 
@@ -43,11 +48,14 @@ public class SinaCrawler
 		                  }	
 		              }	
 		         );
+			
+			System.setOut(printStream);
+			System.setErr(printStream);
 	    }
 
 	    private void setUpUIComponent(final JFrame f)
 	    {
-	        f.setSize(400, 440);   
+	        f.setSize(400, 400);   
 	        f.setResizable(false);
 	        Container container = f.getContentPane();
 	        controlPanel = new JPanel();
@@ -67,7 +75,10 @@ public class SinaCrawler
 			statusArea = new JTextArea();
 			statusArea.setBorder(BorderFactory.createTitledBorder("status of the crawler"));	
 			statusArea.setEditable(false);
-			
+			statusArea.setAutoscrolls(true); 
+			String statusStringBefore = "\n The Crawler has not started~\n\n Just choose your own account \n and the crawler that swarm demands, then press start!! ";
+			statusArea.setText(statusStringBefore);
+            
 			baseBox.add(controlPanel);			
 			baseBox.add(statusPanelLabel);
 			baseBox.add(statusArea);
@@ -78,12 +89,14 @@ public class SinaCrawler
 			Box controlOneVBox = Box.createVerticalBox();
 			Box controlTwoVBox = Box.createVerticalBox();
 			String[] account = {" Wang Heng's Account "," Cao Chen's Account"," Longwei Yu's Account"," Zhang Zhaochen's Account"," Ge Zhenghan's Account"};
-			String[] crawlerString = {" All Crawlers"," Only User Crawler"," Only Status Crawler"," Only Relationship Crawler"," Only Comments Crawler"," Only Trends Crawler"};
+			String[] crawlerString = {" Only User Crawler"," Only Relationship Crawler"," Only Status Crawler"," Only Comments Crawler"};
 			chooseAccountBox = new JComboBox<String>(account);
-			chooseAccountBox.setMaximumSize(new Dimension(320,68));
+			chooseAccountBox.addActionListener(this);
+			chooseAccountBox.setMaximumSize(new Dimension(320,50));
 			chooseAccountBox.setBorder(BorderFactory.createTitledBorder("select which one's account to use "));
 			chooseCrawlerBox = new JComboBox<String>(crawlerString);
-			chooseCrawlerBox.setMaximumSize(new Dimension(320,68));
+			chooseCrawlerBox.addActionListener(this);
+			chooseCrawlerBox.setMaximumSize(new Dimension(320,50));
 			chooseCrawlerBox.setBorder(BorderFactory.createTitledBorder(" select which crawler to start "));
 
 			paddingLabel = new JLabel("         ");
@@ -95,41 +108,28 @@ public class SinaCrawler
 			paddingLabel = new JLabel("         ");
 			controlOneVBox.add(paddingLabel);
 			controlOneVBox.add(chooseCrawlerBox);
-			startButton = new JButton("asdfasdf");
+			startButton = new JButton("Start");
 			startButton.setMaximumSize(new Dimension(80,30));
-			aboutButton = new JButton("About is this fro real");
+			aboutButton = new JButton("About");
 			aboutButton.setMaximumSize(new Dimension(80,30));   
 			exitButton = new JButton("Exit");
 			exitButton.setMaximumSize(new Dimension(80,30)); 
 			
-			startButton.addActionListener(					
+			startButton.addActionListener(this);			
+			aboutButton.addActionListener(
 					new ActionListener()
 					{
 						public void actionPerformed(ActionEvent e)
 						{
-							System.exit(0);	
+							String text = "Email:   iswangheng@gmail.com\n"+"        " +
+									"@author   swarm"+"\n            " +
+									"version: alpha";							
+						     JOptionPane.showMessageDialog(f, text, "About this crawler    ", 1);
 						}
-					})	;
+					});			
+			exitButton.addActionListener(this);
 			
-			aboutButton.addActionListener(					
-					new ActionListener()
-					{
-					         public void actionPerformed(ActionEvent e)
-					         {
-					        	 JOptionPane.showMessageDialog(f, "Email:   iswangheng@gmail.com", "About this crawler    @author swarm", 1);
-					         }
-					});
-			
-			exitButton.addActionListener(					
-					new ActionListener()
-					{
-						public void actionPerformed(ActionEvent e)
-						{
-							System.exit(0);	
-						}
-					})	;
-			
-			//controlTwoVBox.add(startButton);
+			controlTwoVBox.add(startButton);
 			controlTwoVBox.add(paddingLabel);  
 			controlTwoVBox.add(aboutButton);
 			paddingLabel = new JLabel("         ");
@@ -141,36 +141,147 @@ public class SinaCrawler
 			 
 	    } 
 	    
+	    public class MyOutputStream extends OutputStream
+	    {
+	        public void write(int arg0) throws IOException
+	        {
+	          // 写入指定的字节，忽略
+	        }    
+	        
+	        public void write(byte data[]) throws IOException
+	        {
+	          // 追加一行字符串
+	          //statusArea.append(new String(data));
+	          //statusArea.setText(new String(data));
+	        }
+	        
+	        public void write(byte data[], int off, int len) throws IOException 
+	        {
+	          // 追加一行字符串中指定的部分，这个最重要
+	        	//statusArea.setText(new String(data, off, len));
+	          // 移动TextArea的光标到最后，实现自动滚动
+	        	//statusArea.setCaretPosition(statusArea.getText().length());
+	        	final String message = new String(data, off, len);
+                sb.append(message); 
+	            SwingUtilities.invokeLater(new Runnable(){
+	                public void run(){
+	                   if(sb.length()>131)
+	                	   {
+	                	   		sb.delete(0,sb.length()-90);// 控制 sb 的大小确保不会占用太大内存。  
+	                	   }  
+	                    //sb.append("-------sb:"+sb.capacity()+"------- "); 
+	                   currentTime = System.currentTimeMillis(); 
+	                   
+	                   int runningTime = (int)(currentTime - startTime);
+	                   runningTime = runningTime/1000;
+	                   int hour = 0;
+		           	   int minute = 0;
+		           	   int second = 0;
+		           	   int temp = runningTime%3600;
+		           	   if(runningTime>3600)
+		           	   {
+		           	    	   hour= runningTime/3600;
+		           	              if(temp!=0)
+		           	              {
+		           	            	  if(temp>60)
+		           	            	  {
+		           	            		  minute = temp/60;
+		           	            		  if(temp%60!=0)
+		           	            		  {
+		           	            			  	second = temp%60;
+		           	            		  }
+		           	            	  }
+		           	            	  else
+		           	            	  {
+		           	            		  second = temp;
+		           	            	  }
+		           	              }
+		           	    }
+		           	   else
+		           	   {
+		           	    	minute = runningTime/60;
+		           	    	if(runningTime%60!=0)
+		           	    	{
+		           	    	 second = runningTime%60;
+		           	    	}
+		           	   }
+	                    String statusString = statusStringCrawler+"\n\n Crawler has run for "+hour+" hours "+minute+" minutes "+second+" seconds !!"+" \n\n Attention: the running time is not updated in real time~\n\n";
+	                    statusString += sb.toString();
+	                    statusArea.setText(statusString); 
+	                }
+	            });
+	        }
+	    }
+	    
+	    public void actionPerformed(ActionEvent e)
+	    {
+	    	if(e.getSource() == chooseAccountBox)
+	    	{
+	    		 index = chooseAccountBox.getSelectedIndex();
+		 	}
+	    	if(e.getSource() == chooseCrawlerBox)
+	    	{
+	    		crawlerIndex = chooseCrawlerBox.getSelectedIndex();
+	    	}
+	    	if(e.getSource() == startButton)
+	    	{
+	    		isStart++;
+				String crawlerName = "";
+				crawlerName = SetAndGetCrawlerName();
+	    		//首次start则运行，否则不运行
+	    		if(isStart == 1)
+	    		{
+					setAccess(index);	  
+					startTime = System.currentTimeMillis();
+					PublicMethods.setWeibo(consumerKey,consumerSecret,accessToken,accessTokenSecret); 
+ 
+					Thread toRunThread = SetAndGetThread();  
+					toRunThread.start(); 
+					statusStringCrawler = new String("\n The "+crawlerName+" crawler is now running!!!");
+					statusArea.setText(statusStringCrawler);
+	    		}
+	    		else
+	    		{
+	    			statusStringCrawler = new String("\n The "+crawlerName+" crawler is ALREADY running!!!");
+	    			statusArea.setText(statusStringCrawler);;
+	    		}
+		 	} 
+	    	if(e.getSource() == exitButton)
+	    	{
+	    		System.exit(0);	
+		 	}
+	    }
+	    
 	    
 	    public static void setAccess(int i)
 	    {
 	    	 switch (i)
 	    	 {
-		    	 case 1:
+		    	 case 0:
 		    		 consumerKey = Access.AccessWH.consumerKey;
 		    		 consumerSecret = Access.AccessWH.consumerSecret;
 		    		 accessToken = Access.AccessWH.accessToken;
 		    		 accessTokenSecret = Access.AccessWH.accessTokenSecret;
 		    		 break;
-		    	 case 2:
+		    	 case 1:
 		    		 consumerKey = Access.AccessWHT.consumerKey;
 		    		 consumerSecret = Access.AccessWHT.consumerSecret;
 		    		 accessToken = Access.AccessWHT.accessToken;
 		    		 accessTokenSecret = Access.AccessWHT.accessTokenSecret;
 		    		 break;
-		    	 case 3:
+		    	 case 2:
 		    		 consumerKey = Access.AccessLWY.consumerKey;
 		    		 consumerSecret = Access.AccessLWY.consumerSecret;
 		    		 accessToken = Access.AccessLWY.accessToken;
 		    		 accessTokenSecret = Access.AccessLWY.accessTokenSecret;
 		    		 break;
-		    	 case 4:
+		    	 case 3:
 		    		 consumerKey = Access.AccessZZC.consumerKey;
 		    		 consumerSecret = Access.AccessZZC.consumerSecret;
 		    		 accessToken = Access.AccessZZC.accessToken;
 		    		 accessTokenSecret = Access.AccessZZC.accessTokenSecret;
 		    		 break;
-		    	 case 5:
+		    	 case 4:
 		    		 consumerKey = Access.AccessGZH.consumerKey;
 		    		 consumerSecret = Access.AccessGZH.consumerSecret;
 		    		 accessToken = Access.AccessGZH.accessToken;
@@ -185,25 +296,68 @@ public class SinaCrawler
 	    	 }
 	    }
 	    
+	    public Thread SetAndGetThread()
+	    {
+	    	Thread toRun = new Thread();
+			switch(crawlerIndex)
+			{
+				case 0:
+					toRun = new Thread(new GetUsersThread()); 
+					break;
+				case 1:
+					toRun = new Thread(new GetRelationshipThread()); 
+					break;
+				case 2:
+					toRun = new Thread(new GetUserStatusThread()); 
+					break;
+				case 3:
+					toRun = new Thread(new GetCommentsThread()); 
+					break;
+				default: 
+					break;
+			}
+			return toRun;
+	    }
+	    
+	    public String SetAndGetCrawlerName()
+	    {
+	    	String crawlerName = "";
+			switch(crawlerIndex)
+			{
+				case 0:
+					crawlerName = "User";
+					break;
+				case 1:
+					crawlerName = "Relationship";
+					break;
+				case 2:
+					crawlerName = "Status";
+					break;
+				case 3:
+					crawlerName = "Comments";
+					break;
+				default: 
+					break;
+			}
+			return crawlerName;
+	    }
+	    
 		public static void main(String[] args) throws HttpException, IOException
-		{ 
-			setAccess(4);
-			PublicMethods.setWeibo(consumerKey,consumerSecret,accessToken,accessTokenSecret);
-			Thread getUsersThread = new Thread(new GetUsersThread()); 
-			Thread getTrendsThread = new Thread(new GetTrendsThread()); 
-			Thread getRelationshipThread = new Thread(new GetRelationshipThread()); 
-			Thread getUserStatusThread = new Thread(new GetUserStatusThread());
-			Thread getCommentsThread = new Thread(new GetCommentsThread());
+		{ 	
 			
-			getUserStatusThread.start();		
+			//Thread getUsersThread = new Thread(new GetUsersThread());  
+			//Thread getRelationshipThread = new Thread(new GetRelationshipThread()); 
+			//Thread getUserStatusThread = new Thread(new GetUserStatusThread());
+			//Thread getCommentsThread = new Thread(new GetCommentsThread());
+			
+			//getUserStatusThread.start();		
 			//getUsersThread.start();
 			//System.out.println("consumer key: "+Weibo.CONSUMER_KEY+" secret: "+Weibo.CONSUMER_SECRET);
 			//System.out.println("accessToken: "+accessToken+" accessTokenSecret: "+accessTokenSecret);
-			
-		    //getTrendsThread.start();		
+			 
 			//getRelationshipThread.start();
 			//getCommentsThread.start();
-			// new SinaCrawler();
+			new SinaCrawler();
 		}
 		
 	    private JLabel controlPanelLabel;
@@ -212,6 +366,7 @@ public class SinaCrawler
 	    private JPanel statusPanel;
 	    
 	    private JTextArea statusArea;
+	    private PrintStream printStream;
 	    
 	    private JComboBox<String> chooseAccountBox;
 	    private JComboBox<String> chooseCrawlerBox;
@@ -220,7 +375,17 @@ public class SinaCrawler
 	    private JButton exitButton;
 	    private JButton aboutButton;
 	    private JLabel paddingLabel;
+	     
+	  	private static long startTime = (long)0;
+	  	private static long currentTime = (long)0;
+	  	
+	    private StringBuffer sb = new StringBuffer();
 	    
+	    private static String statusStringCrawler = "";
+	    
+	    public static int isStart = 0;
+	    public static int index = 0;
+	    public static int crawlerIndex = 0;
 	    public static String consumerKey ="";
 	    public static String consumerSecret ="";
 	    public static String accessToken ="";

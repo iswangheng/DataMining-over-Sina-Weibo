@@ -38,8 +38,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections; 
 import java.util.List;
-
-import weibo4j.Weibo;
+ 
 import weibo4j.User; 
 import weibo4j.http.Response;
 
@@ -55,7 +54,7 @@ public class GetUsersThread implements Runnable
 			long followerId = 0; 
 			userId = user.getId();
 			List<User> userFollowersList; 
-			List<User> userAllFollowersList = new ArrayList<User>(); 
+			//List<User> userAllFollowersList = new ArrayList<User>(); 
 
 	    	Connection conUsers = PublicMethods.getConnection();	
 	    	Connection conRelationship = PublicMethods.getConnection();	
@@ -74,18 +73,20 @@ public class GetUsersThread implements Runnable
 				{
 					if(userFollower != null)
 					{
-						userAllFollowersList.add(userFollower); 
+						//userAllFollowersList.add(userFollower); 
 						//System.out.println(user.getName());
 						followerId = userFollower.getId();
-						if(PublicMethods.hasRecordInUser(followerId) == false)
-						{ 
+						
+						//如果Relationship表中的userId列有该用户（followerId）的记录，说明已经从该用户出发爬过他的followers了，就跳过他。
+						if(PublicMethods.hasUserRecordInRelationship(followerId,conRelationship) == false)
+						{
 							PublicMethods.InsertRelationshipSql(conRelationship,userId,followerId);		
 							PublicMethods.InsertUserSql(userFollower,conUsers);		 
 						}
 					}
 				}  
 				cursor = PublicMethods.weibo.getTmdNextCursor(res); 
-				Thread.sleep(1000);
+				Thread.sleep(2500);
 			} 
 			while(cursor != 0);
 
@@ -105,6 +106,9 @@ public class GetUsersThread implements Runnable
 		}
 	}
 	
+	
+	/* not useful at least for now*/
+	/*
 	public static void getFollowers(long userId) 
 	{
 		try 
@@ -148,7 +152,7 @@ public class GetUsersThread implements Runnable
 			e1.printStackTrace();
 		}
 	}
-	
+	*/
 	
 	public static void startFromMyself(List<User> myFriList)  
 	{  

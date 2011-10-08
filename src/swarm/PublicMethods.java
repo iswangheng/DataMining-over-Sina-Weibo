@@ -29,9 +29,9 @@ public class PublicMethods
 	{
 		Class.forName("com.mysql.jdbc.Driver");
 
-		String url = "jdbc:mysql://localhost:3306/weibo";
-		String username = "root";
-		String password = "root";
+		String url = "jdbc:mysql://173.231.28.142:3306/weibo"; 
+		String username = "weibo";
+		String password = "weibo";
 
 		Connection con = DriverManager.getConnection(url, username, password);
 		return con;
@@ -87,7 +87,7 @@ public class PublicMethods
 	{
 		try 
 		{ 
-			String insql = "insert ignore into relationship(userId,followerId) values(?,?)";
+			String insql = "insert into relationship(userId,followerId) values(?,?)";
 			PreparedStatement ps = conRelationship.prepareStatement(insql);   
 			ps.setLong(1, userId);
 			ps.setLong(2, followerId); 
@@ -104,15 +104,13 @@ public class PublicMethods
 	
 	
 	
-	public static boolean hasRecordInUser(long userId) throws ClassNotFoundException, SQLException
+	public static boolean hasRecordInUser(long userId, Connection  con) throws ClassNotFoundException, SQLException
 	{
-		String query = "select count(*) from users where  id = "+userId; 
-		Connection con = PublicMethods.getConnection();	
+		String query = "select count(*) from users where  id = "+userId;  
 		PreparedStatement ps = con.prepareStatement(query); 
 		ResultSet rs = ps.executeQuery();
 		rs.next();
-		int countNum = rs.getInt(1);
-		con.close();
+		int countNum = rs.getInt(1); 
 		//System.out.println("CountNum is : "+countNum);
 		if(countNum == 0)
 		{
@@ -124,15 +122,13 @@ public class PublicMethods
 		}
 	}
 	
-	public static boolean hasRecordInRelationship(long userId, long followerId) throws ClassNotFoundException, SQLException
+	public static boolean hasRecordInRelationship(long userId, long followerId, Connection con) throws ClassNotFoundException, SQLException
 	{
-		String query = "select count(*) from relationship where  userId = "+userId+" and followerId = "+followerId; 
-		Connection con = PublicMethods.getConnection();	
+		String query = "select count(*) from relationship where  userId = "+userId+" and followerId = "+followerId;  
 		PreparedStatement ps = con.prepareStatement(query); 
 		ResultSet rs = ps.executeQuery();
 		rs.next();
-		int countNum = rs.getInt(1);
-		con.close();
+		int countNum = rs.getInt(1); 
 		//System.out.println("CountNum is : "+countNum);
 		if(countNum == 0)
 		{
@@ -144,15 +140,13 @@ public class PublicMethods
 		}
 	}
 	
-	public static boolean hasUserRecordInRelationship(long userId) throws ClassNotFoundException, SQLException
+	public static boolean hasUserRecordInRelationship(long userId,Connection con) throws ClassNotFoundException, SQLException
 	{
-		String query = "select count(*) from relationship where  userId = "+userId; 
-		Connection con = PublicMethods.getConnection();	
+		String query = "select count(*) from relationship where  userId = "+userId;  
 		PreparedStatement ps = con.prepareStatement(query); 
 		ResultSet rs = ps.executeQuery();
 		rs.next();
-		int countNum = rs.getInt(1);
-		con.close();
+		int countNum = rs.getInt(1); 
 		//System.out.println("CountNum is : "+countNum);
 		if(countNum == 0)
 		{
