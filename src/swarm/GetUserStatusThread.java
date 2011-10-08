@@ -17,9 +17,12 @@ public class GetUserStatusThread implements Runnable
 	public static void getUserStatus() throws ClassNotFoundException, SQLException, WeiboException, InterruptedException
 	{
 		int pageNum = 1;
+		System.out.println("will connect to the database and get users.......");
 		Connection conUser = PublicMethods.getConnection();
 		java.sql.Statement stmt = conUser.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-		ResultSet rset = stmt.executeQuery("select * from users");
+		System.out.println("okay the connnection to mysql has been established..we are going to select id from users.....");
+		ResultSet rset = stmt.executeQuery("select id from users;");
+		System.out.println("okay has all users, now we are going to shuffle them.......");
 		List<Long> userIdList = new ArrayList<Long>();
 		long userId = (long)0;
 		do

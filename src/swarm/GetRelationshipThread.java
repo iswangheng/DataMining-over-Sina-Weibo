@@ -22,12 +22,14 @@ public class GetRelationshipThread implements Runnable
 			List<Long> userIdList;
 			do 
 			{
+				System.out.println("will connect to the database and get users.......");
 				Connection conRelationship = PublicMethods.getConnection();
 				java.sql.Statement stmt = conRelationship.createStatement(
 						ResultSet.TYPE_SCROLL_INSENSITIVE,
 						ResultSet.CONCUR_UPDATABLE);
-				ResultSet rset = stmt.executeQuery("select * from users");
+				ResultSet rset = stmt.executeQuery("select id from users");
 				userIdList = new ArrayList<Long>();
+				System.out.println("okay has all users, now we are going to shuffle them.......");
 				do
 				{
 					rset.next();

@@ -18,11 +18,14 @@ public class GetCommentsThread implements Runnable
 	{
 		do 
 		{
+			System.out.println("will connect to the database and get status.......");
 			Connection conComments = PublicMethods.getConnection();  
+			System.out.println("okay the connnection to mysql has been established..we are going to select id from status.....");
 			java.sql.Statement stmt = conComments.createStatement(
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
-			ResultSet rset = stmt.executeQuery("select * from status");
+			ResultSet rset = stmt.executeQuery("select id from status"); 
+			System.out.println("okay has all statuses, now we are going to shuffle them.......");
 			List<Long> statusIdList = new ArrayList<Long>();
 			int pageNum = 1;		
 			long statusId = (long)0; 
@@ -30,6 +33,7 @@ public class GetCommentsThread implements Runnable
 			{
 				rset.next();
 				statusId = rset.getLong(1);	
+				//System.out.println("statusId: "+statusId);				
 				Long userIdLongValue = new Long(statusId);
 				statusIdList.add(userIdLongValue);
 			}
