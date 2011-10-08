@@ -205,12 +205,12 @@ public class PublicMethods
 			ps.setDouble(7, status.getLatitude());
 			ps.setDouble(8, status.getLongitude());
 			ps.setString(9, status.getOriginal_pic());
-			int retweetStatusId = 0;
+			long retweetStatusId = (long)0;
 			Status retweetStatus = null;
 			retweetStatus = status.getRetweeted_status();
 			if(retweetStatus != null)
 			{
-				retweetStatusId = (int) retweetStatus.getId();
+				retweetStatusId = retweetStatus.getId();
 			}
 			ps.setLong(10, retweetStatusId);
 			ps.setInt(11, rtCounts);
