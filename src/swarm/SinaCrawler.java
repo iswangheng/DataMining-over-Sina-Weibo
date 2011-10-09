@@ -239,7 +239,7 @@ public class SinaCrawler  implements ActionListener
 					
 					System.out.print("consumer key: "+Weibo.CONSUMER_KEY);
 					Thread toRunThread = SetAndGetThread();  
-					//toRunThread.start(); 
+					toRunThread.start(); 
 					statusStringCrawler = new String("\n The "+crawlerName+" crawler is now running!!!");
 					//statusArea.setText(statusStringCrawler);
 	    		}
