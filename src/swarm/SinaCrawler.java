@@ -88,7 +88,9 @@ public class SinaCrawler  implements ActionListener
 			Box controlBox = Box.createHorizontalBox(); 
 			Box controlOneVBox = Box.createVerticalBox();
 			Box controlTwoVBox = Box.createVerticalBox();
-			String[] account = {" Wang Heng's Account "," Cao Chen's Account"," Longwei Yu's Account"," Zhang Zhaochen's Account"," Ge Zhenghan's Account"};
+			String[] account = {"1.1 Wang Heng's Account ","1.2 Wang Heng's Account ","2.1 Longwei Yu's Account","2.2 Longwei Yu's Account",
+					"3.1 Zhang Zhaochen's Account","3.2 Zhang Zhaochen's Account","4.1 Ge Zhenghan's Account","4.2 Ge Zhenghan's Account",
+					"5.1 Cao Chen's Account","5.2 Cao Chen's Account"};
 			String[] crawlerString = {" Only User Crawler"," Only Relationship Crawler"," Only Status Crawler"," Only Comments Crawler"};
 			chooseAccountBox = new JComboBox<String>(account);
 			chooseAccountBox.addActionListener(this);
@@ -234,11 +236,12 @@ public class SinaCrawler  implements ActionListener
 					setAccess(index);	  
 					startTime = System.currentTimeMillis();
 					PublicMethods.setWeibo(consumerKey,consumerSecret,accessToken,accessTokenSecret); 
- 
+					
+					System.out.print("consumer key: "+Weibo.CONSUMER_KEY);
 					Thread toRunThread = SetAndGetThread();  
-					toRunThread.start(); 
+					//toRunThread.start(); 
 					statusStringCrawler = new String("\n The "+crawlerName+" crawler is now running!!!");
-					statusArea.setText(statusStringCrawler);
+					//statusArea.setText(statusStringCrawler);
 	    		}
 	    		else
 	    		{
@@ -257,7 +260,7 @@ public class SinaCrawler  implements ActionListener
 	    {
 	    	 switch (i)
 	    	 {
-		    	 case 0:
+		    	 case 0:	// WH
 		    		 consumerKey = Access.AccessWH.consumerKey;
 		    		 consumerSecret = Access.AccessWH.consumerSecret;
 		    		 accessToken = Access.AccessWH.accessToken;
@@ -269,29 +272,59 @@ public class SinaCrawler  implements ActionListener
 		    		 accessToken = Access.AccessWHT.accessToken;
 		    		 accessTokenSecret = Access.AccessWHT.accessTokenSecret;
 		    		 break;
-		    	 case 2:
+		    	 case 2:    //LWY
 		    		 consumerKey = Access.AccessLWY.consumerKey;
 		    		 consumerSecret = Access.AccessLWY.consumerSecret;
 		    		 accessToken = Access.AccessLWY.accessToken;
 		    		 accessTokenSecret = Access.AccessLWY.accessTokenSecret;
 		    		 break;
 		    	 case 3:
+		    		 consumerKey = Access.AccessLWYT.consumerKey;
+		    		 consumerSecret = Access.AccessLWYT.consumerSecret;
+		    		 accessToken = Access.AccessLWYT.accessToken;
+		    		 accessTokenSecret = Access.AccessLWYT.accessTokenSecret;
+		    		 break; 
+		    	 case 4:		//ZZC
 		    		 consumerKey = Access.AccessZZC.consumerKey;
 		    		 consumerSecret = Access.AccessZZC.consumerSecret;
 		    		 accessToken = Access.AccessZZC.accessToken;
 		    		 accessTokenSecret = Access.AccessZZC.accessTokenSecret;
 		    		 break;
-		    	 case 4:
+		    	 case 5:
+		    		 consumerKey = Access.AccessZZCT.consumerKey;
+		    		 consumerSecret = Access.AccessZZCT.consumerSecret;
+		    		 accessToken = Access.AccessZZCT.accessToken;
+		    		 accessTokenSecret = Access.AccessZZCT.accessTokenSecret;
+		    		 break; 
+		    	 case 6:  //GZH
 		    		 consumerKey = Access.AccessGZH.consumerKey;
 		    		 consumerSecret = Access.AccessGZH.consumerSecret;
 		    		 accessToken = Access.AccessGZH.accessToken;
 		    		 accessTokenSecret = Access.AccessGZH.accessTokenSecret;
-		    		 break;
+		    		 break; 
+		    	 case 7:
+		    		 consumerKey = Access.AccessGZHT.consumerKey;
+		    		 consumerSecret = Access.AccessGZHT.consumerSecret;
+		    		 accessToken = Access.AccessGZHT.accessToken;
+		    		 accessTokenSecret = Access.AccessGZHT.accessTokenSecret;
+		    		 break; 
+		    	 case 8:   //CC
+		    		 consumerKey = Access.AccessCC.consumerKey;
+		    		 consumerSecret = Access.AccessCC.consumerSecret;
+		    		 accessToken = Access.AccessCC.accessToken;
+		    		 accessTokenSecret = Access.AccessCC.accessTokenSecret;
+		    		 break; 
+		    	 case 9:
+		    		 consumerKey = Access.AccessCCT.consumerKey;
+		    		 consumerSecret = Access.AccessCCT.consumerSecret;
+		    		 accessToken = Access.AccessCCT.accessToken;
+		    		 accessTokenSecret = Access.AccessCCT.accessTokenSecret;
+		    		 break; 
 		    	default:
-		    		 consumerKey = Access.AccessGZH.consumerKey;
-		    		 consumerSecret = Access.AccessGZH.consumerSecret;
-		    		 accessToken = Access.AccessGZH.accessToken;
-		    		 accessTokenSecret = Access.AccessGZH.accessTokenSecret;
+		    		 consumerKey = Access.AccessCCT.consumerKey;
+		    		 consumerSecret = Access.AccessCCT.consumerSecret;
+		    		 accessToken = Access.AccessCCT.accessToken;
+		    		 accessTokenSecret = Access.AccessCCT.accessTokenSecret;
 		    		 break;
 	    	 }
 	    }
