@@ -7,8 +7,5 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="examples"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.17-bin.jar"/>
-	<classpathentry kind="lib" path="D:/nekohtml-1.9.15/nekohtml.jar"/>
-	<classpathentry kind="lib" path="D:/nekohtml-1.9.15/xercesImpl.jar"/>
-	<classpathentry kind="lib" path="D:/nekohtml-1.9.15/xalan.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
