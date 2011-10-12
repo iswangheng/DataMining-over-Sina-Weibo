@@ -86,7 +86,7 @@ public class GetUsersThread implements Runnable
 					}
 				}  
 				cursor = PublicMethods.weibo.getTmdNextCursor(res); 
-				Thread.sleep(2500);
+				Thread.sleep(2350);
 			} 
 			while(cursor != 0);
 

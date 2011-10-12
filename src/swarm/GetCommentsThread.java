@@ -47,28 +47,36 @@ public class GetCommentsThread implements Runnable
 					Paging pag = new Paging(); 
 					pag.setCount(100); 
 					pageNum = 1;
-					do
+					if(PublicMethods.getStatusRecordInComments(statusId, conComments) < 10)
 					{
-						pag.setPage(pageNum);
-						List<Comment> comments = PublicMethods.weibo.getComments(statusId+"",pag);
-						//List<Comment> comments = PublicMethods.weibo.getComments("3343531616094195",pag);
-						
-						pageNum++;
-						if(comments.isEmpty())
+						do
 						{
-							Thread.sleep(2500);
-							break;
-						}
-						else
-						{
-							for (Comment comment : comments) 
+							pag.setPage(pageNum);
+							List<Comment> comments = PublicMethods.weibo.getComments(statusId+"",pag);
+							//List<Comment> comments = PublicMethods.weibo.getComments("3343531616094195",pag);
+							
+							pageNum++;
+							if(comments.isEmpty())
 							{
-								PublicMethods.InsertCommentsSql(conComments, comment, statusId);
-							} 
+								Thread.sleep(2000);
+								break;
+							}
+							else
+							{
+								for (Comment comment : comments) 
+								{
+									PublicMethods.InsertCommentsSql(conComments, comment, statusId);
+								} 
+							}
+							Thread.sleep(2000);
 						}
-						Thread.sleep(2500);
+						while(true);
 					}
-					while(true);
+					else
+					{
+						;  //如果数据库中该围脖的评论数大于10条，就不爬了，不管了
+					}
+					
 				} catch (WeiboException e) {
 					e.printStackTrace();
 				}

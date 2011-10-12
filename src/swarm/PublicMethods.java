@@ -158,6 +158,31 @@ public class PublicMethods
 		}
 	}
 	
+	
+	public static int getUserRecordInStatus(long userId, Connection  con) throws ClassNotFoundException, SQLException
+	{
+		String query = "select count(*) from status where  userId = "+userId;  
+		PreparedStatement ps = con.prepareStatement(query); 
+		ResultSet rs = ps.executeQuery();
+		rs.next();
+		int countNum = rs.getInt(1); 
+		//System.out.println("CountNum is : "+countNum);
+		return countNum;
+	}
+	
+	
+	public static int getStatusRecordInComments(long statusId, Connection  con) throws ClassNotFoundException, SQLException
+	{
+		String query = "select count(*) from comments where  statusId = "+statusId;  
+		PreparedStatement ps = con.prepareStatement(query); 
+		ResultSet rs = ps.executeQuery();
+		rs.next();
+		int countNum = rs.getInt(1); 
+		//System.out.println("CountNum is : "+countNum);
+		return countNum;
+	}
+	
+	
 	public static String dateToMySQLDateTimeString(Date date)
 	{
 		final String[] MONTH = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",

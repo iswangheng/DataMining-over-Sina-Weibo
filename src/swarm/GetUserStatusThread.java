@@ -40,76 +40,84 @@ public class GetUserStatusThread implements Runnable
 			Paging pag = new Paging(); 
 			pag.setCount(200); 
 			pageNum = 1; 
-			do
+			if(PublicMethods.getUserRecordInStatus(userId, conUser) < 100)  //如果这个用户在数据库中的围脖数< 100，就再存下
 			{
-				pag.setPage(pageNum);
-				List<Status> statuses = PublicMethods.weibo.getUserTimeline(userId+"",pag);
-				if(statuses.isEmpty())
+				do
 				{
-					break;
-				}
-				else
-				{
-					StringBuilder ids = new StringBuilder(); 
-					int statusNum = 0;
-		        	int perRoundNum = 0;
-		        	int roundNum = 0;
-		        	int roundIndex = 0;	            
-		            int statusIndex = 0;
-		        	statusNum = statuses.size(); 
-
-					//System.out.println("statuses NUm: "+statusNum);
-		        	//这里分两组的考虑是因为取得评论数和转发数目是批量的，另外取得围脖最大一次200，对于批量取得评论数太大，所以分为两组。
-		        	//分为两组，第一组100个，第二组100个或者statusNum-100个；除非statusNum<100,也就是最后一次取得微博数不足100个，则只有一组。
-		        	if(statusNum < 100)
-		        	{
-		        		roundNum = 1;
-		        		perRoundNum = statusNum;
-		        	}
-		        	else 
-		        	{
-		        		roundNum = 2;
-		        		perRoundNum = 100;
-		        	}		        	
-		        	for(int i = 0; i < roundNum; i++)
-		        	{
-			        	List<Count> counts = null;
-			        	ids = new StringBuilder(); 
-		        		for(;roundIndex < perRoundNum; roundIndex++)
-		        		{
-			        		ids.append(statuses.get(roundIndex).getId()).append(',');	
-		        		} 			
-						//System.out.println("this is the "+i+"th round~~");       
-						if(ids.length() != 0)
-						{
-				        	ids.deleteCharAt(ids.length() - 1); 
-				        	counts = PublicMethods.weibo.getCounts(ids.toString());
-						}
-			            int rtCounts = 0;
-			            int commentCounts = 0; 		
-			            if(counts.isEmpty() == false)
-			            { 
-				            for(Count count: counts)
-				            {	
-					            rtCounts = (int) count.getRt();
-					            commentCounts = (int)count.getComments();		
-								//System.out.println("has count: "+"rtCounts: "+rtCounts+" commentCounts: "+commentCounts);
-					            PublicMethods.InsertStatusSql(conUser, statuses.get(statusIndex), rtCounts, commentCounts); 	 
-					            statusIndex++;
+					pag.setPage(pageNum);
+					List<Status> statuses = PublicMethods.weibo.getUserTimeline(userId+"",pag);
+					if(statuses.isEmpty())
+					{
+						Thread.sleep(1000);
+						break;
+					}
+					else
+					{
+						StringBuilder ids = new StringBuilder(); 
+						int statusNum = 0;
+			        	int perRoundNum = 0;
+			        	int roundNum = 0;
+			        	int roundIndex = 0;	            
+			            int statusIndex = 0;
+			        	statusNum = statuses.size(); 
+	
+						//System.out.println("statuses NUm: "+statusNum);
+			        	//这里分两组的考虑是因为取得评论数和转发数目是批量的，另外取得围脖最大一次200，对于批量取得评论数太大，所以分为两组。
+			        	//分为两组，第一组100个，第二组100个或者statusNum-100个；除非statusNum<100,也就是最后一次取得微博数不足100个，则只有一组。
+			        	if(statusNum < 100)
+			        	{
+			        		roundNum = 1;
+			        		perRoundNum = statusNum;
+			        	}
+			        	else 
+			        	{
+			        		roundNum = 2;
+			        		perRoundNum = 100;
+			        	}		        	
+			        	for(int i = 0; i < roundNum; i++)
+			        	{
+				        	List<Count> counts = null;
+				        	ids = new StringBuilder(); 
+			        		for(;roundIndex < perRoundNum; roundIndex++)
+			        		{
+				        		ids.append(statuses.get(roundIndex).getId()).append(',');	
+			        		} 			
+							//System.out.println("this is the "+i+"th round~~");       
+							if(ids.length() != 0)
+							{
+					        	ids.deleteCharAt(ids.length() - 1); 
+					        	counts = PublicMethods.weibo.getCounts(ids.toString());
+							}
+				            int rtCounts = 0;
+				            int commentCounts = 0; 		
+				            if(counts.isEmpty() == false)
+				            { 
+					            for(Count count: counts)
+					            {	
+						            rtCounts = (int) count.getRt();
+						            commentCounts = (int)count.getComments();		
+									//System.out.println("has count: "+"rtCounts: "+rtCounts+" commentCounts: "+commentCounts);
+						            PublicMethods.InsertStatusSql(conUser, statuses.get(statusIndex), rtCounts, commentCounts); 	 
+						            statusIndex++;
+					            }
 				            }
-			            }
-		        		if(roundNum == 2)
-		        		{
-		        			perRoundNum = statusNum; 
-		        			statusIndex = 100;  //若为有二组的情况，status第二次也要从第二组的第一个开始，而不是第一组的第一个 
-		        		}
-		        	} 
-					pageNum++;
+			        		if(roundNum == 2)
+			        		{
+			        			perRoundNum = statusNum; 
+			        			statusIndex = 100;  //若为有二组的情况，status第二次也要从第二组的第一个开始，而不是第一组的第一个 
+			        		}
+			        	} 
+						pageNum++;
+					}
+					Thread.sleep(2200);
 				}
-				Thread.sleep(2500);
+				while(true); 
+				System.out.println("Oops, Empty~~");  
 			}
-			while(true); 
-			System.out.println("Oops, Empty~~");  
+			else
+			{
+				;      //如果这个用户在数据库中的围脖数>100 ，就跳过这个用户了哦
+			}
 		} 
 		conUser.close();
 	}
