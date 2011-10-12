@@ -90,7 +90,8 @@ public class SinaCrawler  implements ActionListener
 			Box controlTwoVBox = Box.createVerticalBox();
 			String[] account = {"1.1 Wang Heng's Account ","1.2 Wang Heng's Account ","2.1 Longwei Yu's Account","2.2 Longwei Yu's Account",
 					"3.1 Zhang Zhaochen's Account","3.2 Zhang Zhaochen's Account","4.1 Ge Zhenghan's Account","4.2 Ge Zhenghan's Account",
-					"5.1 Cao Chen's Account","5.2 Cao Chen's Account"};
+					"5.1 Cao Chen's Account","5.2 Cao Chen's Account","6.1 ZZC's Old's Account","6.2 ZZC's Old's Account",
+					"7.1 Lab One's Account","7.2 Lab One's Account","8.1 Lab Two's Account","8.2 Lab Two's Account"};
 			String[] crawlerString = {" Only User Crawler"," Only Relationship Crawler"," Only Status Crawler"," Only Comments Crawler"};
 			chooseAccountBox = new JComboBox<String>(account);
 			chooseAccountBox.addActionListener(this);
@@ -319,6 +320,42 @@ public class SinaCrawler  implements ActionListener
 		    		 consumerSecret = Access.AccessCCT.consumerSecret;
 		    		 accessToken = Access.AccessCCT.accessToken;
 		    		 accessTokenSecret = Access.AccessCCT.accessTokenSecret;
+		    		 break; 
+		    	 case 10:				//ZZCOLD
+		    		 consumerKey = Access.AccessZZCOLD.consumerKey;
+		    		 consumerSecret = Access.AccessZZCOLD.consumerSecret;
+		    		 accessToken = Access.AccessZZCOLD.accessToken;
+		    		 accessTokenSecret = Access.AccessZZCOLD.accessTokenSecret;
+		    		 break; 
+		    	 case 11:
+		    		 consumerKey = Access.AccessZZCOLDT.consumerKey;
+		    		 consumerSecret = Access.AccessZZCOLDT.consumerSecret;
+		    		 accessToken = Access.AccessZZCOLDT.accessToken;
+		    		 accessTokenSecret = Access.AccessZZCOLDT.accessTokenSecret;
+		    		 break; 
+		    	 case 12:		//LAB ONE
+		    		 consumerKey = Access.AccessLabOne.consumerKey;
+		    		 consumerSecret = Access.AccessLabOne.consumerSecret;
+		    		 accessToken = Access.AccessLabOne.accessToken;
+		    		 accessTokenSecret = Access.AccessLabOne.accessTokenSecret;
+		    		 break; 
+		    	 case 13:
+		    		 consumerKey = Access.AccessLabOneT.consumerKey;
+		    		 consumerSecret = Access.AccessLabOneT.consumerSecret;
+		    		 accessToken = Access.AccessLabOneT.accessToken;
+		    		 accessTokenSecret = Access.AccessLabOneT.accessTokenSecret;
+		    		 break; 
+		    	 case 14:		//LAB TWO
+		    		 consumerKey = Access.AccessLabTwo.consumerKey;
+		    		 consumerSecret = Access.AccessLabTwo.consumerSecret;
+		    		 accessToken = Access.AccessLabTwo.accessToken;
+		    		 accessTokenSecret = Access.AccessLabTwo.accessTokenSecret;
+		    		 break; 
+		    	 case 15:
+		    		 consumerKey = Access.AccessLabTwoT.consumerKey;
+		    		 consumerSecret = Access.AccessLabTwoT.consumerSecret;
+		    		 accessToken = Access.AccessLabTwoT.accessToken;
+		    		 accessTokenSecret = Access.AccessLabTwoT.accessTokenSecret;
 		    		 break; 
 		    	default:
 		    		 consumerKey = Access.AccessCCT.consumerKey;

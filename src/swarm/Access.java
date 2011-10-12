@@ -80,5 +80,53 @@ public final class Access {
 		final static String accessToken = "ad6820aa51ee85a9bb98380e2b4433ad";
 		final static String accessTokenSecret = "38267d10bc4492a26a089848913bdc00";		
 	}
+	
+	public class AccessZZCOLD
+	{
+		final static String consumerKey = "810785849";
+		final static String consumerSecret = "56181ca97957af9f72610c886ee97eb9";
+		final static String accessToken = "880ddcb68077b31c232909f06f947abc";
+		final static String accessTokenSecret = "9af5098ca980c840d834d8b18d891943";		
+	}
+	
+	public class AccessZZCOLDT
+	{
+		final static String consumerKey = "1725773549";
+		final static String consumerSecret = "42165a4de639bcfeb49f00b053e58e37";
+		final static String accessToken = "d9ec52eb4ded33dfde0e32e74d1fb3f2";
+		final static String accessTokenSecret = "a0cb549ce972b6494d8ad8efb46c329e";		
+	}
+	
+	public class AccessLabOne
+	{
+		final static String consumerKey = "1550796120";
+		final static String consumerSecret = "d9bb8d9bf53add9ebf0ed3986817891d";
+		final static String accessToken = "3cd52ba2fadd137d81b3cc7c2a244c5d";
+		final static String accessTokenSecret = "4629507f9b0f8d60c1999e1447f8b84a";		
+	}
+	
+	public class AccessLabOneT
+	{
+		final static String consumerKey = "147067744";
+		final static String consumerSecret = "0b9a8e034575e91141ab506efcc69735";
+		final static String accessToken = "789c4faa645a72b9470d3cc5290049f8";
+		final static String accessTokenSecret = "95e2d9dd1f811c959579a7d8a2b6b46c";		
+	}
+	
+	public class AccessLabTwo
+	{
+		final static String consumerKey = "1286774156";
+		final static String consumerSecret = "8e14d3a7fc72cd7e80c2e13bf8933baa";
+		final static String accessToken = "d9cb61e0b9a247d6da542aae89c65c9e";
+		final static String accessTokenSecret = "1ba39b2d69a98aa6fa97a961e1405a80";		
+	}
+	
+	public class AccessLabTwoT
+	{
+		final static String consumerKey = "1818108247";
+		final static String consumerSecret = "042db0531f74d6115de728d694c784ee";
+		final static String accessToken = "69825f21ef2a41ccd61b3f0f2dbfeaf5";
+		final static String accessTokenSecret = "4debb212a74b5a409ec5bf6f00c4f04e";		
+	}
 
 }

@@ -29,9 +29,9 @@ public class PublicMethods
 	{
 		Class.forName("com.mysql.jdbc.Driver");
 
-		String url = "jdbc:mysql://173.231.28.142:3306/weibo"; 
-		String username = "weibo";
-		String password = "weibo";
+		String url = "jdbc:mysql://localhost:3306/weibo"; 
+		String username = "root";
+		String password = "root";
 
 		Connection con = DriverManager.getConnection(url, username, password);
 		return con;
