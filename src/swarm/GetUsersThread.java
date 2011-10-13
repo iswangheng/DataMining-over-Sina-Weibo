@@ -59,37 +59,35 @@ public class GetUsersThread implements Runnable
 
 	    	Connection conUsers = PublicMethods.getConnection();	
 			//Status userStatus = user.getStatus();  
-	    	if(PublicMethods.hasRecordInUser(userId, conUsers) == false)    //如果这个关注已经爬过了，就换一个用户，确保多样性！！其实还是有问题的，因为这个用户可能是在下面的follower中存入的，但是帐号现在有500个关注，影响不大
-	    	{
-				PublicMethods.InsertUserSql(user,conUsers);					//store current user 
-				do									//get current user's followers and store all those followers~
+	    	 
+			PublicMethods.InsertUserSql(user,conUsers);					//store current user  
+			do									//get current user's followers and store all those followers~
+			{
+				Response res = PublicMethods.weibo.getFollowersStatusesResponse(userId+"",cursor,200); 
+				userFollowersList = User.constructUser(res); 
+				if(userFollowersList.size() == 0)
 				{
-					Response res = PublicMethods.weibo.getFollowersStatusesResponse(userId+"",cursor,200); 
-					userFollowersList = User.constructUser(res); 
-					if(userFollowersList.size() == 0)
+					break;
+				}
+				for(User userFollower: userFollowersList)
+				{
+					if(userFollower != null)
 					{
-						break;
+						//userAllFollowersList.add(userFollower); 
+						//System.out.println(user.getName());
+						followerId = userFollower.getId();
+						crawleredFollowerNums++;
+						PublicMethods.InsertUserSql(userFollower,conUsers);		  
 					}
-					for(User userFollower: userFollowersList)
-					{
-						if(userFollower != null)
-						{
-							//userAllFollowersList.add(userFollower); 
-							//System.out.println(user.getName());
-							followerId = userFollower.getId();
-							crawleredFollowerNums++;
-							PublicMethods.InsertUserSql(userFollower,conUsers);		  
-						}
-					}  
-					cursor = PublicMethods.weibo.getTmdNextCursor(res); 
-					if(crawleredFollowerNums > 100000)
-					{
-						break;
-					}
-					Thread.sleep(2350);
-				} 
-				while(cursor != 0);
-	    	}
+				}  
+				cursor = PublicMethods.weibo.getTmdNextCursor(res); 
+				if(crawleredFollowerNums > 100000)
+				{
+					break;
+				}
+				Thread.sleep(2350);
+			} 
+			while(cursor != 0); 
 			conUsers.close(); 
 			//now we are going to store the followers of the followers of current user, and current user means a friend of mine who has lots of followers;
 		    /*for(User userInAllFollowersList: userAllFollowersList)

@@ -84,8 +84,8 @@ public class PublicMethods
 		}	 	
 		return false;
 	}
-
-
+ 
+	
 	public static boolean UpdateUsersRelationship(Connection conUsers,Long userId)
 	{
 		try 
@@ -176,7 +176,9 @@ public class PublicMethods
 			return true;
 		}
 	}
+ 
 	
+	/*   not useful anymore
 	public static boolean hasRecordInRelationship(long userId, long followerId, Connection con) throws ClassNotFoundException, SQLException
 	{
 		String query = "select count(*) from relationship where  userId = "+userId+" and followerId = "+followerId;  
@@ -194,7 +196,10 @@ public class PublicMethods
 			return true;
 		}
 	}
+	*/
 	
+	
+	/* not useful anymore
 	public static boolean hasUserRecordInRelationship(long userId,Connection con) throws ClassNotFoundException, SQLException
 	{
 		String query = "select count(*) from relationship where  userId = "+userId;  
@@ -212,6 +217,8 @@ public class PublicMethods
 			return true;
 		}
 	}
+	*/
+	
 	
 	
 	public static int getUserRecordInStatus(long userId, Connection  con) throws ClassNotFoundException, SQLException
