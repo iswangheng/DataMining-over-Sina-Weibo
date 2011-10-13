@@ -85,7 +85,7 @@ public class GetUsersThread implements Runnable
 				{
 					break;
 				}
-				Thread.sleep(2750);
+				Thread.sleep(2850);
 			} 
 			while(cursor != 0); 
 			conUsers.close(); 

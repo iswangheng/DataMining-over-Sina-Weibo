@@ -53,7 +53,7 @@ public class GetRelationshipThread implements Runnable
 							}
 							cursor = PublicMethods.weibo.getTmdNextCursor(res); 
 						}
-						Thread.sleep(2700);
+						Thread.sleep(2900);
 					} 
 					while(cursor != 0);  	
 					PublicMethods.UpdateUsersRelationship(conRelationship,userId);
