@@ -67,6 +67,7 @@ public class GetUsersThread implements Runnable
 				userFollowersList = User.constructUser(res); 
 				if(userFollowersList.size() == 0)
 				{
+					Thread.sleep(2950);
 					break;
 				}
 				for(User userFollower: userFollowersList)
@@ -85,7 +86,7 @@ public class GetUsersThread implements Runnable
 				{
 					break;
 				}
-				Thread.sleep(2850);
+				Thread.sleep(3250);
 			} 
 			while(cursor != 0); 
 			conUsers.close(); 

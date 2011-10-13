@@ -37,7 +37,7 @@ public class GetUserStatusThread implements Runnable
 				if(statuses.isEmpty())
 				{
 					PublicMethods.UpdateUserStatus(conUser, userId);
-					Thread.sleep(2800);
+					Thread.sleep(3200);
 					break;
 				}
 				else
@@ -98,7 +98,7 @@ public class GetUserStatusThread implements Runnable
 		        	} 
 					pageNum++;
 				}
-				Thread.sleep(2900);
+				Thread.sleep(3400);
 			}
 			while(true); 
 			System.out.println("Oops, Empty~~");  
