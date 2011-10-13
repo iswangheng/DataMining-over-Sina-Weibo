@@ -17,9 +17,8 @@ public class GetRelationshipThread implements Runnable
 		{  
 			int cursor = 0;
 			long userId = 0;
-			long followerId = 0; 
-			List<User> userFollowersList;   
-			List<Long> userIdList;
+			long friendId = 0; 
+			List<User> userFriendsList;   
 			do 
 			{
 				System.out.println(" Will connect to the database and get users.......");
@@ -27,52 +26,40 @@ public class GetRelationshipThread implements Runnable
 				java.sql.Statement stmt = conRelationship.createStatement(
 						ResultSet.TYPE_SCROLL_INSENSITIVE,
 						ResultSet.CONCUR_UPDATABLE);
-				ResultSet rset = stmt.executeQuery("select id from users");
-				userIdList = new ArrayList<Long>();
-				System.out.println(" Okay has all users, now we are going to shuffle them.......");
+				ResultSet rset = stmt.executeQuery("select id from users where isRelationshipDone = false ");
 				do
 				{
 					rset.next();
 					userId = rset.getLong(1);	
-					Long userIdLongValue = new Long(userId);
-					userIdList.add(userIdLongValue);
-				}
-				while(!rset.isLast());
-				Collections.shuffle(userIdList);
-				for(Long userIdLong:userIdList)
-				{			 	
-					//if this user's relationship has not been stored
-					//OR we can say, 或者说，如果Relationship表中的userId列有该用户（followerId）的记录，说明已经从该用户出发爬过他的followers了，就跳过他。
-					if(PublicMethods.hasUserRecordInRelationship(userIdLong.longValue(),conRelationship) == false)
-					{
-						do
-						{			
-							Response res = PublicMethods.weibo.getFollowersStatusesResponse(userIdLong.longValue()+"",cursor,200); 
-							userFollowersList = User.constructUser(res); 
-							if(userFollowersList.size() == 0)
+					do
+					{			
+						Response res = PublicMethods.weibo.getFriendsStatusesResponse(userId+"",cursor,200); 
+						userFriendsList = User.constructUser(res); 
+						if(userFriendsList.size() == 0)
+						{
+							break;
+						}
+						else
+						{
+							for(User userFriend: userFriendsList)
 							{
-								break;
-							}
-							else
-							{
-								for(User userFollower: userFollowersList)
-								{
-									if(userFollower != null)
-									{  
-										//System.out.println(user.getName());
-										followerId = userFollower.getId(); 
-										PublicMethods.InsertRelationshipSql(conRelationship,userIdLong.longValue(),followerId);		
-										//PublicMethods.InsertUserSql(userFollower,conRelationship);		 
-									}
+								if(userFriend != null)
+								{  
+									//System.out.println(user.getName());
+									friendId = userFriend.getId(); 
+									PublicMethods.InsertRelationshipSql(conRelationship,friendId,userId);		
+									//PublicMethods.InsertUserSql(userFollower,conRelationship);		 
 								}
-								cursor = PublicMethods.weibo.getTmdNextCursor(res); 
 							}
-							Thread.sleep(2700);
-						} 
-						while(cursor != 0);  	
-						Thread.sleep(1000);
+							cursor = PublicMethods.weibo.getTmdNextCursor(res); 
+						}
+						Thread.sleep(2700);
 					} 
+					while(cursor != 0);  	
+					PublicMethods.UpdateUsersRelationship(conRelationship,userId);
+					Thread.sleep(1000);
 				} 
+				while(!rset.isLast());
 				conRelationship.close();
 			} 
 			while (true);

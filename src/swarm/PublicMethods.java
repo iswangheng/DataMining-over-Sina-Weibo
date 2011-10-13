@@ -44,7 +44,7 @@ public class PublicMethods
 			String insql = "insert ignore into users(id,screenName,province,city" +
 					",location,description,url,profileImageUrl" +
 					",userDomain,gender,followersCount,friendsCount" +
-					",statusesCount,createdAt,verified) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					",statusesCount,createdAt,verified,isRelationshipDone,isStatusDone) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			PreparedStatement ps = conUsers.prepareStatement(insql);   
 			ps.setLong(1, user.getId());
 			ps.setString(2, user.getScreenName());
@@ -71,6 +71,8 @@ public class PublicMethods
 			ps.setInt(13,  user.getStatusesCount());
 			ps.setString(14,  PublicMethods.dateToMySQLDateTimeString(user.getCreatedAt()));   
 			ps.setBoolean(15,  user.isVerified());
+			ps.setBoolean(16,false);
+			ps.setBoolean(17,false);
 	
 			int result = ps.executeUpdate();
 			if (result > 0)
@@ -83,6 +85,59 @@ public class PublicMethods
 		return false;
 	}
 
+
+	public static boolean UpdateUsersRelationship(Connection conUsers,Long userId)
+	{
+		try 
+		{ 
+			String insql = "update users set isRelationshipDone = "+true+" where id = "+userId;
+			PreparedStatement ps = conUsers.prepareStatement(insql);    
+			int result = ps.executeUpdate(); 
+			if (result > 0)
+				return true;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}	 	
+		return false;
+	}
+	
+	public static boolean UpdateUserStatus(Connection conUsers,Long userId)
+	{
+		try 
+		{ 
+			String insql = "update users set isStatusDone = "+true+" where id = "+userId;
+			PreparedStatement ps = conUsers.prepareStatement(insql);    
+			int result = ps.executeUpdate(); 
+			if (result > 0)
+				return true;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}	 	
+		return false;
+	}
+	
+	public static boolean UpdateStatusComments(Connection conStatus,Long statusId)
+	{
+		try 
+		{ 
+			String insql = "update status set isDone = "+true+" where id = "+statusId;
+			PreparedStatement ps = conStatus.prepareStatement(insql);    
+			int result = ps.executeUpdate(); 
+			if (result > 0)
+				return true;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}	 	
+		return false;
+	}
+	
+	
 	public static boolean InsertRelationshipSql(Connection conRelationship,Long userId, Long followerId)
 	{
 		try 
@@ -162,18 +217,6 @@ public class PublicMethods
 	public static int getUserRecordInStatus(long userId, Connection  con) throws ClassNotFoundException, SQLException
 	{
 		String query = "select count(*) from status where  userId = "+userId;  
-		PreparedStatement ps = con.prepareStatement(query); 
-		ResultSet rs = ps.executeQuery();
-		rs.next();
-		int countNum = rs.getInt(1); 
-		//System.out.println("CountNum is : "+countNum);
-		return countNum;
-	}
-	
-	
-	public static int getStatusRecordInComments(long statusId, Connection  con) throws ClassNotFoundException, SQLException
-	{
-		String query = "select count(*) from comments where  statusId = "+statusId;  
 		PreparedStatement ps = con.prepareStatement(query); 
 		ResultSet rs = ps.executeQuery();
 		rs.next();
