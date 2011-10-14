@@ -37,7 +37,7 @@ public class GetRelationshipThread implements Runnable
 						userFriendsList = User.constructUser(res); 
 						if(userFriendsList.size() == 0)
 						{
-							Thread.sleep(2900);
+							Thread.sleep(3900);
 							break;
 						}
 						else
@@ -54,7 +54,7 @@ public class GetRelationshipThread implements Runnable
 							}
 							cursor = PublicMethods.weibo.getTmdNextCursor(res); 
 						}
-						Thread.sleep(3300);
+						Thread.sleep(4400);
 					} 
 					while(cursor != 0);  	
 					PublicMethods.UpdateUsersRelationship(conRelationship,userId);

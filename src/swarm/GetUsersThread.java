@@ -76,9 +76,18 @@ public class GetUsersThread implements Runnable
 					{
 						//userAllFollowersList.add(userFollower); 
 						//System.out.println(user.getName());
-						followerId = userFollower.getId();
-						crawleredFollowerNums++;
-						PublicMethods.InsertUserSql(userFollower,conUsers);		  
+						
+						//如果是僵尸粉，不活跃用户，那么就不要了，要了也没用 						
+						if((userFollower.getStatusesCount() < 10) || (userFollower.getFollowersCount() < 10))
+						{
+							;   // 围脖数<10 或者 粉丝数<10，这种用户就不要了
+						}
+						else
+						{
+							followerId = userFollower.getId();
+							crawleredFollowerNums++;
+							PublicMethods.InsertUserSql(userFollower,conUsers);		  
+						}
 					}
 				}  
 				cursor = PublicMethods.weibo.getTmdNextCursor(res); 
@@ -86,7 +95,7 @@ public class GetUsersThread implements Runnable
 				{
 					break;
 				}
-				Thread.sleep(3250);
+				Thread.sleep(4250);
 			} 
 			while(cursor != 0); 
 			conUsers.close(); 

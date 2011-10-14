@@ -46,7 +46,7 @@ public class GetCommentsThread implements Runnable
 						if(comments.isEmpty())
 						{
 							PublicMethods.UpdateStatusComments(conComments, statusId);
-							Thread.sleep(3200);
+							Thread.sleep(4200);
 							break;
 						}
 						else
@@ -56,7 +56,7 @@ public class GetCommentsThread implements Runnable
 								PublicMethods.InsertCommentsSql(conComments, comment, statusId);
 							} 
 						}
-						Thread.sleep(3300);
+						Thread.sleep(4300);
 					}
 					while(true);					
 				} catch (WeiboException e) {
