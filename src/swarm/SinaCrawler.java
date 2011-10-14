@@ -50,7 +50,7 @@ public class SinaCrawler  implements ActionListener
 		         );
 			
 			System.setOut(printStream);
-			//System.setErr(printStream);
+			System.setErr(printStream);
 	    }
 
 	    private void setUpUIComponent(final JFrame f)

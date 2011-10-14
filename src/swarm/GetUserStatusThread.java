@@ -98,7 +98,7 @@ public class GetUserStatusThread implements Runnable
 		        	} 
 					pageNum++;
 				}
-				Thread.sleep(4400);
+				Thread.sleep(4900);
 			}
 			while(true); 
 			System.out.println("Oops, Empty~~");  
