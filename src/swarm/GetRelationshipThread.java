@@ -18,18 +18,15 @@ public class GetRelationshipThread implements Runnable
 			int cursor = 0;
 			long userId = 0;
 			long friendId = 0; 
-			List<User> userFriendsList;   
-			do 
-			{
+			List<User> userFriendsList;    
 				System.out.println(" Will connect to the database and get users.......");
 				Connection conRelationship = PublicMethods.getConnection();
 				java.sql.Statement stmt = conRelationship.createStatement(
 						ResultSet.TYPE_SCROLL_INSENSITIVE,
 						ResultSet.CONCUR_UPDATABLE);
-				ResultSet rset = stmt.executeQuery("select id from users where isRelationshipDone = false ");
-				do
+				ResultSet rset = stmt.executeQuery("select id from users where isRelationshipDone = false "); 
+				while(rset.next())
 				{
-					rset.next();
 					userId = rset.getLong(1);	
 					do
 					{			
@@ -59,11 +56,9 @@ public class GetRelationshipThread implements Runnable
 					while(cursor != 0);  	
 					PublicMethods.UpdateUsersRelationship(conRelationship,userId);
 					Thread.sleep(1000);
-				} 
-				while(!rset.isLast());
-				conRelationship.close();
-			} 
-			while (true);
+				}  
+				conRelationship.close(); 
+				System.out.println("The Relationship Crawling has finished~~~Lalalalalala");
 		} 
 		catch (Exception e1) 
 		{ 

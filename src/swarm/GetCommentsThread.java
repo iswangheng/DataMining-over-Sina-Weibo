@@ -16,6 +16,7 @@ public class GetCommentsThread implements Runnable
 	
 	public static void getComments() throws ClassNotFoundException, SQLException, InterruptedException
 	{
+		Thread.sleep(600000);
 		do 
 		{
 			System.out.println(" Will connect to the database and get status.......");
@@ -24,12 +25,11 @@ public class GetCommentsThread implements Runnable
 			java.sql.Statement stmt = conComments.createStatement(
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
-			ResultSet rset = stmt.executeQuery("select id from status where isDone = false");  
+			ResultSet rset = stmt.executeQuery("select id from status where id = 1");  
 			int pageNum = 1;		
-			long statusId = (long)0; 
-			do
+			long statusId = (long)0;  
+			while(rset.next())
 			{
-				rset.next();
 				statusId = rset.getLong(1);	 
 				try 
 				{   
@@ -59,12 +59,15 @@ public class GetCommentsThread implements Runnable
 						Thread.sleep(4900);
 					}
 					while(true);					
-				} catch (WeiboException e) {
+				} 
+				catch (WeiboException e)
+				{
 					e.printStackTrace();
 				}
-			}  
-			while(!rset.isLast()); 
-			conComments.close();  
+			} 
+			conComments.close();
+			Thread.sleep(20000);     //一轮评论爬结束后再等20秒
+			System.out.println("No new status....so no new comments");
 		} while (true);
 	}
 	

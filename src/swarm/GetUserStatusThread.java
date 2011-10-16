@@ -23,9 +23,9 @@ public class GetUserStatusThread implements Runnable
 		System.out.println(" Okay the connnection to mysql has been established..we are going to select id from users.....");
 		ResultSet rset = stmt.executeQuery("select id from users where isStatusDone = false;");
 		long userId = (long)0;
-		do
+
+		while(rset.next())
 		{
-			rset.next();
 			userId = rset.getLong(1);	
 			Paging pag = new Paging(); 
 			pag.setCount(200); 
@@ -102,8 +102,7 @@ public class GetUserStatusThread implements Runnable
 			}
 			while(true); 
 			System.out.println("Oops, Empty~~");  
-		} 
-		while(!rset.isLast());		
+		}  
 		conUser.close();
 	}
 	
@@ -111,10 +110,8 @@ public class GetUserStatusThread implements Runnable
 	{ 
 		try 
 		{
-			while(true)
-			{
-				getUserStatus();
-			}
+			getUserStatus();
+			System.out.println("The User's Status Crawling has finished~~~Lalalalalala");
 		} catch (ClassNotFoundException e) { 
 			e.printStackTrace();
 		} catch (SQLException e) { 
