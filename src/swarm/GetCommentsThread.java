@@ -16,7 +16,7 @@ public class GetCommentsThread implements Runnable
 	
 	public static void getComments() throws ClassNotFoundException, SQLException, InterruptedException
 	{
-		Thread.sleep(600000);
+		Thread.sleep(10000);
 		do 
 		{
 			System.out.println(" Will connect to the database and get status.......");
