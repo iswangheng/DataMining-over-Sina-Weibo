@@ -412,7 +412,7 @@ public class SinaCrawler  implements ActionListener
 			return crawlerName;
 	    }
 	    
-		public static void main(String[] args) throws HttpException, IOException
+		public static void main(String[] args) throws HttpException, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
 		{ 	
 			
 			//Thread getUsersThread = new Thread(new GetUsersThread());  
@@ -425,8 +425,6 @@ public class SinaCrawler  implements ActionListener
 			//System.out.println("consumer key: "+Weibo.CONSUMER_KEY+" secret: "+Weibo.CONSUMER_SECRET);
 			//System.out.println("accessToken: "+accessToken+" accessTokenSecret: "+accessTokenSecret);
 			 
-			//getRelationshipThread.start();
-			//getCommentsThread.start();
 			new SinaCrawler();
 		}
 		
