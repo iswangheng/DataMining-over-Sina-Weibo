@@ -25,7 +25,7 @@ public class GetCommentsThread implements Runnable
 			java.sql.Statement stmt = conComments.createStatement(
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
-			ResultSet rset = stmt.executeQuery("select id from status where id = 1");  
+			ResultSet rset = stmt.executeQuery("select id from status where isDone = false");  
 			int pageNum = 1;		
 			long statusId = (long)0;  
 			while(rset.next())

@@ -79,7 +79,7 @@ public class GetUserStatusThread implements Runnable
 						}
 			            int rtCounts = 0;
 			            int commentCounts = 0; 		
-			            if(counts.isEmpty() == false)
+			            if((counts != null) && (counts.isEmpty() == false))
 			            { 
 				            for(Count count: counts)
 				            {	
