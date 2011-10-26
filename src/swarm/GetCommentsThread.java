@@ -16,7 +16,7 @@ public class GetCommentsThread implements Runnable
 	
 	public static void getComments() throws ClassNotFoundException, SQLException, InterruptedException
 	{
-		Thread.sleep(10000);
+		//Thread.sleep(10000);
 		do 
 		{
 			System.out.println(" Will connect to the database and get status.......");
@@ -25,49 +25,66 @@ public class GetCommentsThread implements Runnable
 			java.sql.Statement stmt = conComments.createStatement(
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
-			ResultSet rset = stmt.executeQuery("select id from status where isDone = false");  
+			ResultSet rset = stmt.executeQuery("select id, commentCounts from status where isDone = false");  
 			int pageNum = 1;		
+			int commentCounts = 0;
 			long statusId = (long)0;  
 			while(rset.next())
 			{
 				statusId = rset.getLong(1);	 
-				try 
-				{   
-					Paging pag = new Paging(); 
-					pag.setCount(100); 
-					pageNum = 1;
-					do
-					{
-						pag.setPage(pageNum);
-						List<Comment> comments = PublicMethods.weibo.getComments(statusId+"",pag);
-						//List<Comment> comments = PublicMethods.weibo.getComments("3343531616094195",pag);
-						
-						pageNum++;
-						if(comments.isEmpty())
-						{
-							PublicMethods.UpdateStatusComments(conComments, statusId);
-							Thread.sleep(4900);
-							break;
-						}
-						else
-						{
-							for (Comment comment : comments) 
-							{
-								PublicMethods.InsertCommentsSql(conComments, comment, statusId);
-							} 
-						}
-						Thread.sleep(4900);
-					}
-					while(true);					
-				} 
-				catch (WeiboException e)
+				commentCounts = rset.getInt(2);
+				System.out.println("commentCounts: "+commentCounts);
+				//Thread.sleep(2000);
+				if(commentCounts == 0)
 				{
-					e.printStackTrace();
+					PublicMethods.UpdateStatusComments(conComments, statusId);
+					//continue;
 				}
+				else
+				{
+					try 
+					{   
+						Paging pag = new Paging(); 
+						pag.setCount(100); 
+						pageNum = 1;
+						do
+						{
+							pag.setPage(pageNum);
+							List<Comment> comments = PublicMethods.weibo.getComments(statusId+"",pag);
+							//List<Comment> comments = PublicMethods.weibo.getComments("3343531616094195",pag);
+							
+							pageNum++;
+							if(comments.isEmpty())
+							{
+								Thread.sleep(1000);
+								break;
+							}
+							else
+							{
+								for (Comment comment : comments) 
+								{
+									PublicMethods.InsertCommentsSql(conComments, comment, statusId);
+									commentCounts--;
+								} 
+								if(commentCounts <= 100)
+								{
+									break;
+								}
+							}
+							Thread.sleep(2900);
+						}
+						while(true);		
+						PublicMethods.UpdateStatusComments(conComments, statusId);			
+					} 
+					catch (WeiboException e)
+					{
+						e.printStackTrace();
+					}
+				}				
 			} 
 			conComments.close();
-			Thread.sleep(20000);     //一轮评论爬结束后再等20秒
 			System.out.println("No new status....so no new comments");
+			Thread.sleep(20000);     //一轮评论爬结束后再等20秒
 		} while (true);
 	}
 	

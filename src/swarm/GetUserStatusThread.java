@@ -76,20 +76,21 @@ public class GetUserStatusThread implements Runnable
 						{
 				        	ids.deleteCharAt(ids.length() - 1); 
 				        	counts = PublicMethods.weibo.getCounts(ids.toString());
-						}
-			            int rtCounts = 0;
-			            int commentCounts = 0; 		
-			            if((counts != null) && (counts.isEmpty() == false))
-			            { 
-				            for(Count count: counts)
-				            {	
-					            rtCounts = (int) count.getRt();
-					            commentCounts = (int)count.getComments();		
-								//System.out.println("has count: "+"rtCounts: "+rtCounts+" commentCounts: "+commentCounts);
-					            PublicMethods.InsertStatusSql(conUser, statuses.get(statusIndex), rtCounts, commentCounts); 	 
-					            statusIndex++;
+				        	int rtCounts = 0;
+				            int commentCounts = 0; 		
+				            if((counts != null) && (counts.isEmpty() == false))
+				            { 
+					            for(Count count: counts)
+					            {	
+						            rtCounts = (int) count.getRt();
+						            commentCounts = (int)count.getComments();		
+									//System.out.println("has count: "+"rtCounts: "+rtCounts+" commentCounts: "+commentCounts);
+						            PublicMethods.InsertStatusSql(conUser, statuses.get(statusIndex), rtCounts, commentCounts); 	 
+						            statusIndex++;
+					            }
 				            }
-			            }
+						}
+			         
 		        		if(roundNum == 2)
 		        		{
 		        			perRoundNum = statusNum; 
