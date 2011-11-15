@@ -25,7 +25,7 @@ public class GetCommentsThread implements Runnable
 			java.sql.Statement stmt = conComments.createStatement(
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
-			ResultSet rset = stmt.executeQuery("select id, commentCounts from status where isDone = false");  
+			ResultSet rset = stmt.executeQuery("select id, commentCounts from status where isDone = false limit 100");  
 			int pageNum = 1;		
 			int commentCounts = 0;
 			long statusId = (long)0;  
@@ -71,7 +71,7 @@ public class GetCommentsThread implements Runnable
 									break;
 								}
 							}
-							Thread.sleep(2900);
+							Thread.sleep(3900);
 						}
 						while(true);		
 						PublicMethods.UpdateStatusComments(conComments, statusId);			
@@ -83,8 +83,7 @@ public class GetCommentsThread implements Runnable
 				}				
 			} 
 			conComments.close();
-			System.out.println("No new status....so no new comments");
-			Thread.sleep(20000);     //一轮评论爬结束后再等20秒
+			System.out.println("No new status....so no new comments"); 
 		} while (true);
 	}
 	
@@ -92,7 +91,10 @@ public class GetCommentsThread implements Runnable
 	{
 		try 
 		{
-			getComments();
+			while(true)
+			{
+				getComments();
+			}
 		} catch (ClassNotFoundException e) { 
 			e.printStackTrace();
 		} catch (SQLException e) { 

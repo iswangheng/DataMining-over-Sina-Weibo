@@ -21,23 +21,36 @@ public class GetUserStatusThread implements Runnable
 		Connection conUser = PublicMethods.getConnection();
 		java.sql.Statement stmt = conUser.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
 		System.out.println(" Okay the connnection to mysql has been established..we are going to select id from users.....");
-		ResultSet rset = stmt.executeQuery("select id from users where isStatusDone = false;");
+		ResultSet rset = stmt.executeQuery("select id,statusesCount from users where isStatusDone = false limit 100;");
 		long userId = (long)0;
+		int statusesCount = 0;
+		int sleepTime = 2700;
 
 		while(rset.next())
 		{
 			userId = rset.getLong(1);	
+			statusesCount = rset.getInt(2);
+			//System.out.print("userId: "+userId+" statusesCount: "+statusesCount);
 			Paging pag = new Paging(); 
 			pag.setCount(200); 
 			pageNum = 1;  
+			if(statusesCount == 0)
+			{
+				PublicMethods.UpdateUserStatus(conUser, userId);
+				continue;
+			}
 			do
 			{
+				if(pageNum == 2)
+				{
+					PublicMethods.UpdateUserStatus(conUser, userId);
+					break;
+				}
 				pag.setPage(pageNum);
 				List<Status> statuses = PublicMethods.weibo.getUserTimeline(userId+"",pag);
 				if(statuses.isEmpty())
 				{
 					PublicMethods.UpdateUserStatus(conUser, userId);
-					Thread.sleep(3200);
 					break;
 				}
 				else
@@ -57,11 +70,13 @@ public class GetUserStatusThread implements Runnable
 		        	{
 		        		roundNum = 1;
 		        		perRoundNum = statusNum;
+		        		sleepTime = 3700;
 		        	}
 		        	else 
 		        	{
 		        		roundNum = 2;
 		        		perRoundNum = 100;
+		        		sleepTime = 4700;
 		        	}		        	
 		        	for(int i = 0; i < roundNum; i++)
 		        	{
@@ -99,7 +114,7 @@ public class GetUserStatusThread implements Runnable
 		        	} 
 					pageNum++;
 				}
-				Thread.sleep(4900);
+				Thread.sleep(sleepTime);
 			}
 			while(true); 
 			System.out.println("Oops, Empty~~");  
@@ -111,8 +126,11 @@ public class GetUserStatusThread implements Runnable
 	{ 
 		try 
 		{
-			getUserStatus();
-			System.out.println("The User's Status Crawling has finished~~~Lalalalalala");
+			while(true)
+			{
+				getUserStatus();
+			}
+			//System.out.println("The User's Status Crawling has finished~~~Lalalalalala");
 		} catch (ClassNotFoundException e) { 
 			e.printStackTrace();
 		} catch (SQLException e) { 

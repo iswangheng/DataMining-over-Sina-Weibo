@@ -49,7 +49,7 @@ public class GetUsersThread implements Runnable
 	{
 		try 
 		{ 
-			int cursor = 0;
+			int cursor = -1;
 			int crawleredFollowerNums = 0;
 			long userId = 0;
 			long followerId = 0; 
@@ -180,7 +180,7 @@ public class GetUsersThread implements Runnable
 		try 
 		{ 
 			int cursor;
-			cursor = 0;
+			cursor = -1;
 			try 
 			{
 				do
