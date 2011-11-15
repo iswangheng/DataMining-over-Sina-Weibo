@@ -56,7 +56,7 @@ public class GetCommentsThread implements Runnable
 							pageNum++;
 							if(comments.isEmpty())
 							{
-								Thread.sleep(1000);
+								Thread.sleep(4000);
 								break;
 							}
 							else
@@ -71,7 +71,7 @@ public class GetCommentsThread implements Runnable
 									break;
 								}
 							}
-							Thread.sleep(3900);
+							Thread.sleep(4700);
 						}
 						while(true);		
 						PublicMethods.UpdateStatusComments(conComments, statusId);			
