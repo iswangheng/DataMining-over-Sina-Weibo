@@ -14,9 +14,10 @@ import weibo4j.WeiboException;
 
 public class GetUserStatusThread implements Runnable
 { 
-	public static void getUserStatus() throws ClassNotFoundException, SQLException, WeiboException, InterruptedException
+	public static boolean getUserStatus() throws ClassNotFoundException, SQLException, WeiboException, InterruptedException
 	{
 		int pageNum = 1;
+		boolean isDone = true;
 		System.out.println("  Will connect to the database and get users.......");
 		Connection conUser = PublicMethods.getConnection();
 		java.sql.Statement stmt = conUser.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
@@ -24,10 +25,11 @@ public class GetUserStatusThread implements Runnable
 		ResultSet rset = stmt.executeQuery("select id,statusesCount from users where isStatusDone = false limit 100;");
 		long userId = (long)0;
 		int statusesCount = 0;
-		int sleepTime = 2700;
-
+		int sleepTime = 2700; 
+		
 		while(rset.next())
 		{
+			isDone = false;
 			userId = rset.getLong(1);	
 			statusesCount = rset.getInt(2);
 			//System.out.print("userId: "+userId+" statusesCount: "+statusesCount);
@@ -70,13 +72,13 @@ public class GetUserStatusThread implements Runnable
 		        	{
 		        		roundNum = 1;
 		        		perRoundNum = statusNum;
-		        		sleepTime = 3700;
+		        		sleepTime = 4700;
 		        	}
 		        	else 
 		        	{
 		        		roundNum = 2;
 		        		perRoundNum = 100;
-		        		sleepTime = 4700;
+		        		sleepTime = 5700;
 		        	}		        	
 		        	for(int i = 0; i < roundNum; i++)
 		        	{
@@ -120,6 +122,7 @@ public class GetUserStatusThread implements Runnable
 			System.out.println("Oops, Empty~~");  
 		}  
 		conUser.close();
+		return isDone;
 	}
 	
 	public void run()
@@ -128,9 +131,12 @@ public class GetUserStatusThread implements Runnable
 		{
 			while(true)
 			{
-				getUserStatus();
+				if(getUserStatus() == true)
+				{
+					break;
+				}
 			}
-			//System.out.println("The User's Status Crawling has finished~~~Lalalalalala");
+			System.out.println("The User's Status Crawling has finished~~~Lalalalalala");
 		} catch (ClassNotFoundException e) { 
 			e.printStackTrace();
 		} catch (SQLException e) { 

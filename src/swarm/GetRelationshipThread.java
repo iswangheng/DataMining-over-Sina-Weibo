@@ -15,7 +15,7 @@ public class GetRelationshipThread implements Runnable
 {
 	public static boolean getUserRelationship() throws ClassNotFoundException, SQLException, WeiboException, InterruptedException
 	{
-		boolean isDone = false;
+		boolean isDone = true;
 		try 
 		{  
 			int cursor = -1;
@@ -28,13 +28,12 @@ public class GetRelationshipThread implements Runnable
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
 			ResultSet rset = stmt.executeQuery("select id from users where isRelationshipDone = false limit 100"); 
-			if(rset.wasNull())
-			{
-				isDone = true;
-			}
+
 			while(rset.next())
 			{
-				userId = rset.getLong(1);	
+				isDone = false;
+				userId = rset.getLong(1);
+				System.out.println("rset 1: "+userId);
 				do
 				{			
 					Response res = PublicMethods.weibo.getFriendsStatusesResponse(userId+"",cursor,200); 
@@ -58,14 +57,13 @@ public class GetRelationshipThread implements Runnable
 						}
 						cursor = PublicMethods.weibo.getTmdNextCursor(res); 
 					}
-					Thread.sleep(3900);
+					Thread.sleep(4900);
 				} 
 				while(cursor != 0);  	
 				PublicMethods.UpdateUsersRelationship(conRelationship,userId);
 				Thread.sleep(1000);
 			}  
-			conRelationship.close(); 
-			//System.out.println("The Relationship Crawling has finished~~~Lalalalalala"); 
+			conRelationship.close();  
 		} 
 		catch (Exception e1) 
 		{ 
@@ -80,9 +78,12 @@ public class GetRelationshipThread implements Runnable
 		{
 			while(true)
 			{
-				getUserRelationship();
+				if(getUserRelationship() == true)
+				{
+					break;
+				}
 			}
-			//System.out.println("The User's Status Crawling has finished~~~Lalalalalala");
+			System.out.println("The User's Relationship Crawling has finished~~~Lalalalalala");
 		} catch (ClassNotFoundException e) { 
 			e.printStackTrace();
 		} catch (SQLException e) { 
