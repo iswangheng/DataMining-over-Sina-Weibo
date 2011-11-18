@@ -12,8 +12,7 @@ import weibo4j.Paging;
 import weibo4j.WeiboException;
 
 public class GetCommentsThread implements Runnable
-{
-	
+{	
 	public static boolean getComments() throws ClassNotFoundException, SQLException, InterruptedException
 	{ 
 		boolean isDone = true;
@@ -55,7 +54,7 @@ public class GetCommentsThread implements Runnable
 						pageNum++;
 						if(comments.isEmpty())
 						{
-							Thread.sleep(4700);
+							//Thread.sleep(4700);
 							break;
 						}
 						else
@@ -70,7 +69,7 @@ public class GetCommentsThread implements Runnable
 								break;
 							}
 						}
-						Thread.sleep(5700);
+						//Thread.sleep(5700);
 					}
 					while(true);		
 					PublicMethods.UpdateStatusComments(conComments, statusId);			
@@ -83,8 +82,7 @@ public class GetCommentsThread implements Runnable
 		} 
 		conComments.close();
 		return isDone;
-	}
-	
+	} 
 	public void run()
 	{
 		try 
